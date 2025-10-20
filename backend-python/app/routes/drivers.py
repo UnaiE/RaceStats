@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services.ergast_service import get_all_drivers
+from services.eargast-service import get_all_drivers
 
 router = APIRouter(prefix="/drivers", tags=["drivers"])
 
