@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.orm import relationship
-from app.core.database import Base
+from app.resources.database import Base
 
 class Circuit(Base):
     __tablename__ = "circuits"
