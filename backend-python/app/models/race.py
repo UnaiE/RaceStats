@@ -15,14 +15,10 @@ class Race(Base):
     country = Column(String)
     winner_id = Column(String, ForeignKey("drivers.driver_id"), nullable=True)
     
-    # Relación con Driver
-    winner = relationship("Driver", lazy="joined")
-
-    # Nueva relación
+  # Relaciones
     season_id = Column(Integer, ForeignKey("seasons.id"), nullable=True)
+    circuit_id = Column(Integer, ForeignKey("circuits.id"), nullable=True)
+
     season_rel = relationship("Season", back_populates="races")
-
     winner = relationship("Driver", lazy="joined")
-
-    def __repr__(self):
-        return f"<Race({self.race_name} - {self.season_year})>"
+    circuit = relationship("Circuit", back_populates="races")

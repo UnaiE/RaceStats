@@ -17,5 +17,5 @@ class Team(Base):
     drivers = relationship("Driver", back_populates="team")
 
     # Relación: un piloto tiene muchas temporadas
-    championships = relationship("Team", back_populates="championship")
-
+    championships = relationship("Championship", back_populates="team")
+    cars = relationship("Car", back_populates="team")
