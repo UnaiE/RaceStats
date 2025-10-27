@@ -4,22 +4,16 @@ from typing import List
 from app.models_sql.user import User
 from app.schemas.sql.user_schemas import UserCreate, UserResponse
 from app.resources.db_sql import get_db
+from app.services.sql_services import get_user_by_email, create_user
 
 router = APIRouter()
 
 @router.post("/", response_model=UserResponse)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if db_user:
+def create_new_user(user: UserCreate, db: Session = Depends(get_db)):
+    existing = get_user_by_email(db, user.email)
+    if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
-    new_user = User(
-        username=user.username,
-        email=user.email,
-        hashed_password=user.password  # En producción: hashear contraseña
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    new_user = create_user(db, user.username, user.email, user.password)
     return new_user
 
 @router.get("/", response_model=List[UserResponse])
