@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 class Team(BaseModel):
+    team_id: str
     name: str
     nationality: Optional[str] = None
     championships: int = 0

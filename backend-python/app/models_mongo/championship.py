@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 class Championship(BaseModel):
+    championship_id: str
     name: str
     governing_body: Optional[str] = "FIA"
     description: Optional[str] = None
