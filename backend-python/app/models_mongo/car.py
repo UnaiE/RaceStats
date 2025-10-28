@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class Car(BaseModel):
-    card_id: str
+    car_id: str
     name: str
     model_year: int
     team: Optional[str] = None
