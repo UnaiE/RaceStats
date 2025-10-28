@@ -1,35 +1,36 @@
-from app.resources.db_mongo import db
+# app/services/mongo_services.py
 from bson import ObjectId
+from app.db.db_mongo import db  # Conexión ya inicializada (Motor o PyMongo)
+from fastapi import HTTPException
 
-# Funciones genéricas para CRUD
-async def get_all(collection_name):
-    collection = db[collection_name]
-    cursor = collection.find({})
-    results = []
-    async for document in cursor:
-        document["_id"] = str(document["_id"])
-        results.append(document)
+def _get_collection(collection_name: str):
+    return db[collection_name]
+
+async def get_all(collection_name: str):
+    collection = _get_collection(collection_name)
+    results = await collection.find().to_list(length=None)
     return results
 
-async def get_one(collection_name, object_id):
-    collection = db[collection_name]
-    doc = await collection.find_one({"_id": ObjectId(object_id)})
-    if doc:
-        doc["_id"] = str(doc["_id"])
-    return doc
+async def get_one(collection_name: str, item_id: str):
+    collection = _get_collection(collection_name)
+    result = await collection.find_one({"_id": ObjectId(item_id)})
+    return result
 
-async def create(collection_name, data: dict):
-    collection = db[collection_name]
+async def create(collection_name: str, data: dict):
+    collection = _get_collection(collection_name)
     result = await collection.insert_one(data)
-    data["_id"] = str(result.inserted_id)
-    return data
+    new_item = await collection.find_one({"_id": result.inserted_id})
+    return new_item
 
-async def update(collection_name, object_id, data: dict):
-    collection = db[collection_name]
-    await collection.update_one({"_id": ObjectId(object_id)}, {"$set": data})
-    return await get_one(collection_name, object_id)
+async def update(collection_name: str, item_id: str, data: dict):
+    collection = _get_collection(collection_name)
+    result = await collection.update_one({"_id": ObjectId(item_id)}, {"$set": data})
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Document not found")
+    updated_item = await collection.find_one({"_id": ObjectId(item_id)})
+    return updated_item
 
-async def delete(collection_name, object_id):
-    collection = db[collection_name]
-    result = await collection.delete_one({"_id": ObjectId(object_id)})
+async def delete(collection_name: str, item_id: str):
+    collection = _get_collection(collection_name)
+    result = await collection.delete_one({"_id": ObjectId(item_id)})
     return result.deleted_count
