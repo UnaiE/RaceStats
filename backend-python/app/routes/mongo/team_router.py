@@ -1,37 +1,28 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from typing import List
-from app.services.mongo_services import get_all, get_one, create, update, delete
-from app.models_mongo.team import Team
-
-router = APIRouter()
-
-collection_name = "teams"
+from app.controllers.mongo.team_controller import (
+    get_all_teams, get_team, create_team_controller,
+    update_team_controller, delete_team_controller
+)
+from app.schemas.mongo.team_schemas import Team
+router = APIRouter(prefix="/teams", tags=["Teams"])
 
 @router.get("/", response_model=List[Team])
 async def read_teams():
-    return await get_all(collection_name)
+    return await get_all_teams()
 
 @router.get("/{team_id}", response_model=Team)
 async def read_team(team_id: str):
-    team = await get_one(collection_name, team_id)
-    if not team:
-        raise HTTPException(status_code=404, detail="Team not found")
-    return team
+    return await get_team(team_id)
 
 @router.post("/", response_model=Team)
 async def create_team(team: Team):
-    return await create(collection_name, team.dict())
+    return await create_team_controller(team.dict())
 
 @router.put("/{team_id}", response_model=Team)
 async def update_team(team_id: str, team: Team):
-    updated = await update(collection_name, team_id, team.dict())
-    if not updated:
-        raise HTTPException(status_code=404, detail="Team not found")
-    return updated
+    return await update_team_controller(team_id, team.dict())
 
 @router.delete("/{team_id}")
 async def delete_team(team_id: str):
-    deleted_count = await delete(collection_name, team_id)
-    if deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Team not found")
-    return {"deleted": deleted_count}
+    return await delete_team_controller(team_id)

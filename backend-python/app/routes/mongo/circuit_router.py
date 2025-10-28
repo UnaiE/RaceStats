@@ -1,37 +1,29 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from typing import List
-from app.services.mongo_services import get_all, get_one, create, update, delete
-from app.models_mongo.circuit import Circuit
+from app.controllers.mongo.circuit_controller import (
+    get_all_circuits, get_circuit, create_circuit_controller,
+    update_circuit_controller, delete_circuit_controller
+)
+from app.schemas.mongo.circuit_schemas import Circuit
 
-router = APIRouter()
-
-collection_name = "circuits"
+router = APIRouter(prefix="/circuits", tags=["Circuits"])
 
 @router.get("/", response_model=List[Circuit])
 async def read_circuits():
-    return await get_all(collection_name)
+    return await get_all_circuits()
 
 @router.get("/{circuit_id}", response_model=Circuit)
 async def read_circuit(circuit_id: str):
-    circuit = await get_one(collection_name, circuit_id)
-    if not circuit:
-        raise HTTPException(status_code=404, detail="Circuit not found")
-    return circuit
+    return await get_circuit(circuit_id)
 
 @router.post("/", response_model=Circuit)
 async def create_circuit(circuit: Circuit):
-    return await create(collection_name, circuit.dict())
+    return await create_circuit_controller(circuit.dict())
 
 @router.put("/{circuit_id}", response_model=Circuit)
 async def update_circuit(circuit_id: str, circuit: Circuit):
-    updated = await update(collection_name, circuit_id, circuit.dict())
-    if not updated:
-        raise HTTPException(status_code=404, detail="Circuit not found")
-    return updated
+    return await update_circuit_controller(circuit_id, circuit.dict())
 
 @router.delete("/{circuit_id}")
 async def delete_circuit(circuit_id: str):
-    deleted_count = await delete(collection_name, circuit_id)
-    if deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Circuit not found")
-    return {"deleted": deleted_count}
+    return await delete_circuit_controller(circuit_id)

@@ -1,37 +1,29 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from typing import List
-from app.services.mongo_services import get_all, get_one, create, update, delete
-from app.models_mongo.championship import Championship
+from app.controllers.mongo.championship_controller import (
+    get_all_championships, get_championship, create_championship_controller,
+    update_championship_controller, delete_championship_controller
+)
+from app.schemas.mongo.championship_schemas import Championship
 
-router = APIRouter()
-
-collection_name = "championships"
+router = APIRouter(prefix="/championships", tags=["Championships"])
 
 @router.get("/", response_model=List[Championship])
 async def read_championships():
-    return await get_all(collection_name)
+    return await get_all_championships()
 
 @router.get("/{championship_id}", response_model=Championship)
 async def read_championship(championship_id: str):
-    championship = await get_one(collection_name, championship_id)
-    if not championship:
-        raise HTTPException(status_code=404, detail="Championship not found")
-    return championship
+    return await get_championship(championship_id)
 
 @router.post("/", response_model=Championship)
 async def create_championship(championship: Championship):
-    return await create(collection_name, championship.dict())
+    return await create_championship_controller(championship.dict())
 
 @router.put("/{championship_id}", response_model=Championship)
 async def update_championship(championship_id: str, championship: Championship):
-    updated = await update(collection_name, championship_id, championship.dict())
-    if not updated:
-        raise HTTPException(status_code=404, detail="Championship not found")
-    return updated
+    return await update_championship_controller(championship_id, championship.dict())
 
 @router.delete("/{championship_id}")
 async def delete_championship(championship_id: str):
-    deleted_count = await delete(collection_name, championship_id)
-    if deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Championship not found")
-    return {"deleted": deleted_count}
+    return await delete_championship_controller(championship_id)

@@ -1,37 +1,29 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from typing import List
-from app.services.mongo_services import get_all, get_one, create, update, delete
-from app.models_mongo.season import Season
+from app.controllers.mongo.season_controller import (
+    get_all_seasons, get_season, create_season_controller,
+    update_season_controller, delete_season_controller
+)
+from app.schemas.mongo.season_schemas import Season
 
-router = APIRouter()
-
-collection_name = "seasons"
+router = APIRouter(prefix="/seasons", tags=["Seasons"])
 
 @router.get("/", response_model=List[Season])
 async def read_seasons():
-    return await get_all(collection_name)
+    return await get_all_seasons()
 
 @router.get("/{season_id}", response_model=Season)
 async def read_season(season_id: str):
-    season = await get_one(collection_name, season_id)
-    if not season:
-        raise HTTPException(status_code=404, detail="Season not found")
-    return season
+    return await get_season(season_id)
 
 @router.post("/", response_model=Season)
 async def create_season(season: Season):
-    return await create(collection_name, season.dict())
+    return await create_season_controller(season.dict())
 
 @router.put("/{season_id}", response_model=Season)
 async def update_season(season_id: str, season: Season):
-    updated = await update(collection_name, season_id, season.dict())
-    if not updated:
-        raise HTTPException(status_code=404, detail="Season not found")
-    return updated
+    return await update_season_controller(season_id, season.dict())
 
 @router.delete("/{season_id}")
 async def delete_season(season_id: str):
-    deleted_count = await delete(collection_name, season_id)
-    if deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Season not found")
-    return {"deleted": deleted_count}
+    return await delete_season_controller(season_id)
