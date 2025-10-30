@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class Circuit(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
     circuit_id: str
     name: str
     location: Optional[str] = None

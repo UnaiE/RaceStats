@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class Driver(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
     driver_id: str
     given_name: str
     family_name: str

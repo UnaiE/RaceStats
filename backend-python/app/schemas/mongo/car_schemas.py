@@ -1,7 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class Car(BaseModel):
+    id: Optional[str] = Field(None, alias="_id") # ID interno de MongoDB
+    car_id: str # ID externo
     name: str
     model_year: int
     team: Optional[str] = None

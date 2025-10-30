@@ -1,7 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
 
 class Season(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    season_id: str
     year: int
     champion_driver: Optional[str] = None
     champion_team: Optional[str] = None
