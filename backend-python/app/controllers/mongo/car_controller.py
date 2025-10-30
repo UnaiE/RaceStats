@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from app.services.mongo_services import get_all, get_one, create, update, delete
+from app.services.mongo_services import get_all,get_one_by_field, get_one, create, update, delete
 
 collection = "cars"
 
@@ -7,7 +7,7 @@ async def get_all_cars():
     return await get_all(collection)
 
 async def get_car(car_id: str):
-    car = await get_one(collection, car_id)
+    car = await get_one_by_field(collection, "car_id", car_id)
     if not car:
         raise HTTPException(status_code=404, detail="Car not found")
     return car

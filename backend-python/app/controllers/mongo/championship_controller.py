@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from app.services.mongo_services import get_all, get_one, create, update, delete
+from app.services.mongo_services import get_all, get_one_by_field, get_one, create, update, delete
 
 collection = "championships"
 
@@ -7,7 +7,7 @@ async def get_all_championships():
     return await get_all(collection)
 
 async def get_championship(championship_id: str):
-    championship = await get_one(collection, championship_id)
+    championship = await get_one_by_field(collection, "championship_id", championship_id)
     if not championship:
         raise HTTPException(status_code=404, detail="Championship not found")
     return championship
