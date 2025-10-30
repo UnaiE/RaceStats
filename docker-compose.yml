@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  fastapi:
+    build: ./backend-python
+    ports:
+      - "8000:8000"
+  node:
+    build: ./backend-node
+    ports:
+      - "3001:3001"
+  gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: racestats
+    ports:
+      - "5432:5432"
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
