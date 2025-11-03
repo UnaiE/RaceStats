@@ -1,28 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from app.models_sql.user import User
 from app.schemas.sql.user_schemas import UserCreate, UserResponse
 from app.resources.db_sql import get_db
-from app.services.sql_services import get_user_by_email, create_user
+from app.controllers.sql.user_controller import (
+    create_user_controller, get_all_users_controller, get_user_by_id_controller
+)
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.post("/", response_model=UserResponse)
 def create_new_user(user: UserCreate, db: Session = Depends(get_db)):
-    existing = get_user_by_email(db, user.email)
-    if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    new_user = create_user(db, user.username, user.email, user.password)
-    return new_user
+    return create_user_controller(db, user.username, user.email, user.password)
 
 @router.get("/", response_model=List[UserResponse])
 def read_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
+    return get_all_users_controller(db)
 
 @router.get("/{user_id}", response_model=UserResponse)
 def read_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+    return get_user_by_id_controller(db, user_id)

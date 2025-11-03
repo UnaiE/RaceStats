@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.resources.config import settings
 
-SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL  # SQLite o PostgreSQL
+SQLALCHEMY_DATABASE_URL = "sqlite:///./racestats.db"  # temporal para test local
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
