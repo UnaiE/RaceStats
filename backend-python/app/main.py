@@ -64,7 +64,8 @@ app.include_router(championship_router.router, prefix="/championships", tags=["C
 app.include_router(user_router.router, prefix="/users", tags=["Users"])
 app.include_router(favorite_router.router, prefix="/favorites", tags=["Favorites"])
 app.include_router(comparison_router.router, prefix="/comparisons", tags=["Comparisons"])
-app.include_router(login_router.router, prefix="/login", tags=["Login"])
+app.include_router(login_router.router, tags=["Users"])
+
 
 # Healthcheck
 @app.get("/")

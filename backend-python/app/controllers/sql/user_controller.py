@@ -29,3 +29,9 @@ def get_user_by_id_controller(db: Session, user_id: int):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+def login_user(db: Session, email: str, password: str):
+    user = get_user_by_email(db, email)
+    if not user or not verify_password(password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Email o contraseña incorrectos")
+    return {"username": user.username, "email": user.email}
