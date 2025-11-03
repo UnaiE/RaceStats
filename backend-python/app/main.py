@@ -1,12 +1,29 @@
+# backend-python/app/main.py
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+# Routers MongoDB
 from app.routes.mongo import (
-    driver_router, team_router, race_router,
-    car_router, circuit_router, season_router, championship_router
+    driver_router,
+    team_router,
+    race_router,
+    car_router,
+    circuit_router,
+    season_router,
+    championship_router,
 )
+
+# Routers SQL
 from app.routes.sql import (
-    user_router, favorite_router, comparison_router
+    user_router,
+    favorite_router,
+    comparison_router,
+    login_router  # router nuevo para login
 )
+
+# DB init
 from app.resources.db_mongo import init_mongo
+from app.resources.db_sql import init_sql_db
 
 app = FastAPI(
     title="RaceStats F1 API",
@@ -14,28 +31,40 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Inicialización de Mongo
+# CORS
+origins = ["http://localhost:5173"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Inicialización de DB
 @app.on_event("startup")
-async def startup_db_client():
+async def startup_db():
     await init_mongo()
+    init_sql_db()
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
     print("🧹 Cerrando conexión Mongo...")
 
-# MongoDB Routers
-app.include_router(driver_router.router)
-app.include_router(team_router.router)
-app.include_router(race_router.router)
-app.include_router(car_router.router)
-app.include_router(circuit_router.router)
-app.include_router(season_router.router)
-app.include_router(championship_router.router)
+# Routers MongoDB
+app.include_router(driver_router.router, prefix="/drivers", tags=["Drivers"])
+app.include_router(team_router.router, prefix="/teams", tags=["Teams"])
+app.include_router(race_router.router, prefix="/races", tags=["Races"])
+app.include_router(car_router.router, prefix="/cars", tags=["Cars"])
+app.include_router(circuit_router.router, prefix="/circuits", tags=["Circuits"])
+app.include_router(season_router.router, prefix="/seasons", tags=["Seasons"])
+app.include_router(championship_router.router, prefix="/championships", tags=["Championships"])
 
-# SQL Routers
-app.include_router(user_router.router)
-app.include_router(favorite_router.router)
-app.include_router(comparison_router.router)
+# Routers SQL
+app.include_router(user_router.router, prefix="/users", tags=["Users"])
+app.include_router(favorite_router.router, prefix="/favorites", tags=["Favorites"])
+app.include_router(comparison_router.router, prefix="/comparisons", tags=["Comparisons"])
+app.include_router(login_router.router, prefix="/login", tags=["Login"])
 
 # Healthcheck
 @app.get("/")

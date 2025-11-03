@@ -5,8 +5,14 @@ from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def get_password_hash(password: str):
+def get_password_hash(password: str) -> str:
+    # truncamos manualmente por si el input es demasiado largo
+    if len(password) > 72:
+        password = password[:72]
     return pwd_context.hash(password)
+# nueva función para login
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
 
 def create_user_controller(db: Session, username: str, email: str, password: str):
     existing = get_user_by_email(db, email)

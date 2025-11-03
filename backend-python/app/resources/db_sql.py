@@ -18,3 +18,9 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+
+def init_sql_db():
+    Base.metadata.create_all(bind=engine)
+    print("✅ Tablas SQL creadas correctamente")
