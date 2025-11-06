@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log*
+yarn-error.log*
+coverage
+.dist
+build
+.git
+.gitignore
+.env
+.env.*
+.eslintcache
+.vite
+.DS_Store
