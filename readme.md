@@ -1,119 +1,156 @@
 # RaceStats
 
-RaceStats será una aplicación web interactiva en donde se permitirá visualizar y comparar datos históricos y actuales de la Fórmula 1. Se ofrecerán estadísticas de pilotos, escuderías y carreras en detalle, pudiendo consumir información en tiempo real gracias a las APIs públicas. 
-
-Se trata de un proyecto que quiere acercar la analítica deportiva a los aficionados, mediante una interfaz moderna y ágil. Para ello, se hará uso de microservicios en Python y Node.js con una arquitectura basada en APIs RESTful.
+RaceStats es una aplicación web para visualizar y comparar datos históricos y actuales de Fórmula 1. Ofrece estadísticas de pilotos, escuderías y carreras, con datos en tiempo real a través de APIs públicas, y una arquitectura de microservicios (Python y Node.js) expuesta vía REST y un API Gateway.
 
 ## 📋 Estructura del Proyecto
 
 ```
 RaceStats/
-├── api-gateway/          # Gateway de API
-├── backend-node/         # Backend en Node.js
-├── backend-python/       # Backend en Python (FastAPI)
-├── frontend/            # Frontend React
-└── docker-compose.yml   # Configuración Docker
+├── api-gateway/            # API Gateway (proxy a FastAPI y Node)
+│   ├── Dockerfile
+│   ├── index.js            # Punto de entrada del gateway
+│   ├── package.json
+│   └── .dockerignore
+├── backend-node/           # Backend Node.js (Express)
+│   ├── Dockerfile
+│   ├── src/
+│   │   ├── app.js
+│   │   ├── server.js
+│   │   └── openapi.json
+│   ├── package.json
+│   └── .dockerignore
+├── backend-python/         # Backend Python (FastAPI)
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── resources/
+│   │   └── ...
+│   └── .dockerignore
+├── frontend/               # Frontend React + Vite + Tailwind v4
+│   ├── Dockerfile
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css       # Tailwind v4 ("@import \"tailwindcss\";")
+│   ├── postcss.config.js   # Usa '@tailwindcss/postcss'
+│   ├── vite.config.js
+│   ├── package.json
+│   └── .dockerignore
+├── docker-compose.yml      # Orquestación de servicios
+└── .gitignore              # Ignora venv, node_modules, builds, .env, etc.
 ```
 
-## 🚀 Configuración del Entorno
+## 🚀 Arranque rápido con Docker
 
-### Backend Python
+Requisitos: Docker Desktop (Windows/macOS) o Docker Engine (Linux).
 
-#### 1. Crear y activar el entorno virtual
-
-**Windows (PowerShell):**
 ```powershell
-# Crear entorno virtual en la raíz del proyecto
-python -m venv .venv
+# Desde la raíz del proyecto
+docker compose up --build -d
 
-# Activar entorno virtual
+# Ver estado
+docker compose ps
+
+# Logs de un servicio (ejemplo frontend)
+
+
+# Parar todo
+docker compose down
+```
+
+Servicios y URLs
+- Frontend (Vite): http://localhost:5173
+- API Gateway: http://localhost:8080
+- FastAPI: http://localhost:8000
+- Backend Node: http://localhost:3001
+- MongoDB: 27017 (expuesto al host)
+- PostgreSQL: 5432 (expuesto al host)
+
+Rutas útiles
+- Gateway health: GET http://localhost:8080/health
+- Proxy a FastAPI: GET http://localhost:8080/api/python/
+- Proxy a Node: GET http://localhost:8080/api/node/health
+- FastAPI raíz: GET http://localhost:8000/
+- Node health: GET http://localhost:3001/health
+- Frontend login (SPA): http://localhost:5173/login
+
+Notas de Compose
+- Se eliminó la clave `version` (obsoleta) para evitar warnings.
+- Para evitar incompatibilidades de binarios, `node_modules` se gestionan dentro de los contenedores (volúmenes anónimos), no en el host.
+- El frontend ejecuta Vite con `--host 0.0.0.0` para exponer a `localhost`.
+
+Variables de entorno (definidas en `docker-compose.yml`)
+- PostgreSQL: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_HOST=postgres`, `POSTGRES_PORT=5432`
+- MongoDB: `MONGO_URI=mongodb://mongo:27017/racestats`
+- CORS Frontend: `FRONTEND_URL=http://localhost:5173`
+- Frontend (Vite): `VITE_API_URL=http://localhost:8080`
+
+## 💻 Desarrollo local (opcional)
+
+### Backend Python (FastAPI)
+
+Usa el entorno virtual del proyecto y el `requirements.txt` ya preparado.
+
+```powershell
+# Crear y activar venv (Windows PowerShell)
+python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-```
 
-**Linux/Mac:**
-```bash
-# Crear entorno virtual
-python -m venv .venv
-
-# Activar entorno virtual
-source .venv/bin/activate
-```
-
-#### 2. Instalar dependencias
-
-Una vez activado el entorno virtual, instala las dependencias necesarias:
-
-```powershell
-pip install fastapi uvicorn sqlalchemy motor pydantic pydantic-settings pymongo requests
-```
-
-O crea un archivo `requirements.txt` en `backend-python/`:
-
-```txt
-fastapi
-uvicorn
-sqlalchemy
-motor
-pydantic
-pydantic-settings
-pymongo
-requests
-```
-
-Y luego instala con:
-```powershell
+# Instalar dependencias del backend
 pip install -r backend-python/requirements.txt
+
+# Ejecutar FastAPI en local
+cd backend-python
+python -m uvicorn app.main:app --reload
 ```
 
-#### 3. Verificar la instalación
+El `requirements.txt` incluye, entre otros: fastapi, uvicorn, sqlalchemy, motor, pymongo,
+pydantic, pydantic-settings, email-validator, httpx, requests, passlib[bcrypt], bcrypt 3.2.2,
+dnspython, psycopg2-binary.
 
-Para verificar que todo está instalado correctamente:
+### Frontend
 
 ```powershell
-pip list
+cd frontend
+npm install
+npm run dev
 ```
 
-### Dependencias del Proyecto
+Tailwind CSS v4 está configurado con `@tailwindcss/postcss` y `src/index.css`:
 
-#### Backend Python
-- **FastAPI**: Framework web moderno y rápido
-- **Uvicorn**: Servidor ASGI para FastAPI
-- **SQLAlchemy**: ORM para bases de datos SQL
-- **Motor**: Driver asíncrono de MongoDB
-- **Pydantic**: Validación de datos y configuración
-- **PyMongo**: Driver de MongoDB
-- **Requests**: Cliente HTTP
-
-#### Frontend
-- React.js
-- (Más detalles en `frontend/racestats-ui/package.json`)
-
-#### Backend Node.js
-- (Detalles en `backend-node/package.json`)
-
-
-
-## 📦 Docker
-
-El proyecto incluye configuración Docker para facilitar el despliegue:
-
-```powershell
-docker-compose up
+```css
+@import "tailwindcss";
 ```
 
 ## 🛠️ Tecnologías
 
-- Frontend → React
+- Frontend → React + Vite + Tailwind CSS v4
 - Backend Python → FastAPI
 - Backend Node.js → Express.js
-- API Gateway → Node.js / OpenAPI 3.0 / Swagger
-- BD Relacional → SQLAlchemy + SQLite
-- BD No-Relacional → MongoDB
-- API → OpenF1 / EargastF1
-- Infraestructura → Docker / Docker compose
-- Versión control → GitHUB
+- API Gateway → Node.js / http-proxy-middleware / Swagger UI
+- BD relacional → PostgreSQL (driver psycopg2-binary) vía SQLAlchemy
+- BD no relacional → MongoDB (Motor / PyMongo)
+- Infraestructura → Docker / Docker Compose
 
+## 📦 Qué commitear
 
-## 📝 Notas
+Se recomienda subir al repositorio:
+- `docker-compose.yml` y todos los `Dockerfile`
+- `.gitignore` y los `.dockerignore`
+- Código fuente, `requirements.txt`, `package.json` y `package-lock.json`
+
+No subir:
+- `node_modules/`, `.venv/`, `dist/`, `build/`, caches (`__pycache__`, `.pytest_cache`, `.vite`, `.eslintcache`), bases de datos locales (`racestats.db`) ni ficheros `.env` (usa un `.env.example`).
+
+## 🧩 Solución de problemas
+
+- El warning de Compose sobre `version` ya está resuelto al eliminar la clave.
+- Si el frontend no arranca dentro de Docker por binarios de Rollup, asegúrate de usar la imagen `node:20` (no `alpine`) o reconstruye con `docker compose build --no-cache`.
+- Si un servicio Node reinicia en bucle por dependencias faltantes, valida su `package.json` y reconstruye la imagen (`docker compose build <servicio>`).
+
+---
+
+¡Listo! Con `docker compose up --build -d` deberías tener el stack completo funcionando en los puertos indicados.
 
 
