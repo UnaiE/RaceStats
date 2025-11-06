@@ -1,30 +1,98 @@
 version: "3.9"
+
 services:
-  fastapi:
-    build: ./backend-python
-    ports:
-      - "8000:8000"
-  node:
-    build: ./backend-node
-    ports:
-      - "3001:3001"
-  gateway:
-    build: ./api-gateway
-    ports:
-      - "8080:8080"
-  mongo:
-    image: mongo
-    ports:
-      - "27017:27017"
   postgres:
-    image: postgres
+    image: postgres:16
+    container_name: racestats_postgres
+    restart: always
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: racestats
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:7
+    container_name: racestats_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  fastapi:
+    build: ./backend-python
+    container_name: racestats_backend_fastapi
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    ports:
+      - "8000:8000"
+    environment:
+      # PostgreSQL
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: racestats
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      # MongoDB
+      MONGO_URI: mongodb://mongo:27017/racestats
+      # CORS
+      FRONTEND_URL: http://localhost:5173
+    volumes:
+      - ./backend-python:/app
+
+  node:
+    build: ./backend-node
+    container_name: racestats_backend_node
+    restart: always
+    depends_on:
+      - mongo
+      - postgres
+    ports:
+      - "3001:3001"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/racestats
+      POSTGRES_URI: postgresql://admin:admin@postgres:5432/racestats
+    volumes:
+      - ./backend-node:/usr/src/app
+      - /usr/src/app/node_modules
+
+  gateway:
+    build: ./api-gateway
+    container_name: racestats_api_gateway
+    restart: always
+    depends_on:
+      - fastapi
+      - node
+    ports:
+      - "8080:8080"
+    environment:
+      FASTAPI_URL: http://fastapi:8000
+      NODE_URL: http://node:3001
+      FRONTEND_URL: http://frontend:5173
+    # No mount de código para evitar conflictos de node_modules en contenedor
+
   frontend:
     build: ./frontend
+    container_name: racestats_frontend
+    restart: always
+    depends_on:
+      - fastapi
+      - gateway
     ports:
       - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8080
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+volumes:
+  postgres_data:
+  mongo_data:

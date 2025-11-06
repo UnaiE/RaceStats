@@ -1,0 +1,26 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "RaceStats Backend Node API",
+    "version": "1.0.0",
+    "description": "API de servicios Node.js para RaceStats"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Servidor local"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Servidor funcionando correctamente"
+          }
+        }
+      }
+    }
+  }
+}
