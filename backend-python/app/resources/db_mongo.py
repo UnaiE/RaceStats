@@ -16,7 +16,8 @@ async def init_mongo():
     print(f"✅ Conectado a MongoDB: {MONGO_URI}")
 
 def get_collection(name: str):
-    """Obtiene una colección de MongoDB de forma segura"""
-    if not db:
-        raise Exception("❌ MongoDB no inicializado. Llama a init_mongo() antes de usar la DB.")
+    global db
+    if db is None:
+        raise Exception("MongoDB no inicializado")
     return db[name]
+
