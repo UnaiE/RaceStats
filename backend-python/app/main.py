@@ -44,7 +44,7 @@ app.add_middleware(
 # Inicialización de DB
 @app.on_event("startup")
 async def startup_db():
-    await init_mongo()
+    init_mongo()
     init_sql_db()
 
 @app.on_event("shutdown")

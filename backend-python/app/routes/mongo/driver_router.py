@@ -1,29 +1,24 @@
 from fastapi import APIRouter
-from typing import List
-from app.controllers.mongo.driver_controller import (
-    get_all_drivers, get_driver, create_driver_controller,
-    update_driver_controller, delete_driver_controller
-)
-from app.schemas.mongo.driver_schemas import Driver
+from app.controllers.mongo import driver_controller
+from app.services.openf1_import_service import import_drivers
 
 router = APIRouter(prefix="/drivers", tags=["Drivers"])
 
-@router.get("/", response_model=List[Driver])
-async def read_drivers():
-    return await get_all_drivers()
+@router.get("/", summary="Obtener todos los pilotos")
+def get_all_drivers():
+    """Devuelve todos los pilotos almacenados en MongoDB."""
+    return driver_controller.get_all_drivers()
 
-@router.get("/{driver_id}", response_model=Driver)
-async def read_driver(driver_id: str):
-    return await get_driver(driver_id)
+@router.get("/{driver_id}", summary="Obtener piloto por ID")
+def get_driver(driver_id: str):
+    """Devuelve un piloto específico por su driver_id."""
+    return driver_controller.get_driver(driver_id)
 
-@router.post("/", response_model=Driver)
-async def create_driver(driver: Driver):
-    return await create_driver_controller(driver.dict())
-
-@router.put("/{driver_id}", response_model=Driver)
-async def update_driver(driver_id: str, driver: Driver):
-    return await update_driver_controller(driver_id, driver.dict())
-
-@router.delete("/{driver_id}")
-async def delete_driver(driver_id: str):
-    return await delete_driver_controller(driver_id)
+@router.post("/refresh", summary="Actualizar pilotos desde OpenF1")
+async def refresh_drivers():
+    """
+    Descarga los datos actualizados desde la API pública de OpenF1
+    y actualiza los pilotos almacenados en MongoDB.
+    """
+    await import_drivers()
+    return {"message": "✅ Pilotos actualizados desde OpenF1"}
