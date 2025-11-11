@@ -7,7 +7,7 @@ def get_all_seasons():
     return get_all(collection)
 
 def get_season(season_id: str):
-    season = get_one_by_field(collection, "season_id", season_id)
+    season = get_one_by_field(collection, "year", season_id)
     if not season:
         raise HTTPException(status_code=404, detail="Season not found")
     return season

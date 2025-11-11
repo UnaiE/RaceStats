@@ -113,7 +113,7 @@ def import_races(year: int = None):
                 "circuit_short_name": s.get("circuit_short_name"),
             }
             races_collection.update_one(
-                {"race_id": s.get("session_key")},
+                {"session_key": s.get("session_key")},  # Buscar por session_key
                 {"$set": doc},
                 upsert=True
             )

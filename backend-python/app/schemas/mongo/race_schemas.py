@@ -3,6 +3,7 @@ from typing import Optional
 
 class Race(BaseModel):
     id: Optional[str] = Field(None, alias="_id")
+    race_id: int
     session_key: int
     session_name: str
     meeting_key: int

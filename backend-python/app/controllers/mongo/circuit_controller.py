@@ -7,7 +7,7 @@ def get_all_circuits():
     return get_all(collection)
 
 def get_circuit(circuit_id: str):
-    circuit = get_one_by_field(collection, "circuit_id", circuit_id)
+    circuit = get_one_by_field(collection, "circuit_key", circuit_id)
     if not circuit:
         raise HTTPException(status_code=404, detail="Circuit not found")
     return circuit

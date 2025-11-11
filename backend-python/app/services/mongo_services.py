@@ -13,8 +13,8 @@ def serialize_doc(doc):
 def get_one_by_field(collection_name: str, field: str, value: str):
     collection = get_collection(collection_name)
     
-    # Para driver_id, buscar tanto string como int (debido a datos mixtos)
-    if field == "driver_id":
+    # Para ciertos campos, buscar tanto string como int (debido a datos mixtos)
+    if field in ["driver_id", "race_id", "session_key", "circuit_key", "year"]:
         # Intentar convertir a int si es posible
         try:
             int_value = int(value)
