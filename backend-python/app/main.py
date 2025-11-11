@@ -11,6 +11,7 @@ from app.routes.mongo import (
     circuit_router,
     season_router,
     championship_router,
+    external_calendar_router,
 )
 
 # Routers SQL
@@ -59,6 +60,7 @@ app.include_router(car_router.router, tags=["Cars"])
 app.include_router(circuit_router.router, tags=["Circuits"])
 app.include_router(season_router.router, tags=["Seasons"])
 app.include_router(championship_router.router, tags=["Championships"])
+app.include_router(external_calendar_router.router, prefix="/calendar", tags=["External Calendar"])
 
 # Routers SQL
 app.include_router(user_router.router, tags=["Users"])

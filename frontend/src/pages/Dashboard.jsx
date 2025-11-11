@@ -1,6 +1,7 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import RaceCountdown from "../components/RaceCountdown";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -96,6 +97,11 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Race Countdown */}
+        <div className="mb-12">
+          <RaceCountdown />
+        </div>
+
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
             ¿Qué quieres explorar hoy?
