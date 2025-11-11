@@ -1,15 +1,18 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleLoginSuccess = (userData) => {
     console.log("Login exitoso:", userData);
-    // Aquí puedes guardar el usuario en localStorage, Context, Redux, etc.
-    // localStorage.setItem("user", JSON.stringify(userData));
-    // Redirigir a dashboard o página principal
+    login(userData); // Guarda usuario en context y localStorage
+    navigate("/dashboard"); // Redirige al dashboard
   };
 
   const handleRegisterSuccess = (userData) => {
