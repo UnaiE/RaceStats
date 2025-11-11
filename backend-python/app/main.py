@@ -52,13 +52,13 @@ async def shutdown_db_client():
     print("🧹 Cerrando conexión Mongo...")
 
 # Routers MongoDB
-app.include_router(driver_router.router, prefix="/drivers", tags=["Drivers"])
-app.include_router(team_router.router, prefix="/teams", tags=["Teams"])
-app.include_router(race_router.router, prefix="/races", tags=["Races"])
-app.include_router(car_router.router, prefix="/cars", tags=["Cars"])
-app.include_router(circuit_router.router, prefix="/circuits", tags=["Circuits"])
-app.include_router(season_router.router, prefix="/seasons", tags=["Seasons"])
-app.include_router(championship_router.router, prefix="/championships", tags=["Championships"])
+app.include_router(driver_router.router, tags=["Drivers"])
+app.include_router(team_router.router, tags=["Teams"])
+app.include_router(race_router.router, tags=["Races"])
+app.include_router(car_router.router, tags=["Cars"])
+app.include_router(circuit_router.router, tags=["Circuits"])
+app.include_router(season_router.router, tags=["Seasons"])
+app.include_router(championship_router.router, tags=["Championships"])
 
 # Routers SQL
 app.include_router(user_router.router, prefix="/users", tags=["Users"])

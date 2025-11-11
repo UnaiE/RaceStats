@@ -3,15 +3,17 @@ from typing import Optional
 
 class Race(BaseModel):
     id: Optional[str] = Field(None, alias="_id")
-    race_id: str
-    race_name: str
-    round: Optional[int] = None
-    season_year: int
-    date: Optional[str] = None
-    location: Optional[str] = None
-    country: Optional[str] = None
-    winner_id: Optional[str] = None
-    circuit_id: Optional[str] = None
+    session_key: int
+    session_name: str
+    meeting_key: int
+    meeting_name: Optional[str] = None
+    circuit_key: int
+    location: str
+    country_key: int
+    date_start: str
+    date_end: str
+    year: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Actualizado de orm_mode para Pydantic v2
+

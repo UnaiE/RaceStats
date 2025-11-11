@@ -16,10 +16,10 @@ def get_driver(driver_id: int):
     return driver_controller.get_driver(str(driver_id))
 
 @router.post("/refresh", summary="Actualizar pilotos desde OpenF1")
-async def refresh_drivers():
+def refresh_drivers():
     """
     Descarga los datos actualizados desde la API pública de OpenF1
     y actualiza los pilotos almacenados en MongoDB.
     """
-    await import_drivers()
-    return {"message": "✅ Pilotos actualizados desde OpenF1"}
+    result = import_drivers()
+    return {"message": "✅ Pilotos actualizados desde OpenF1", "stats": result}
