@@ -61,10 +61,10 @@ app.include_router(season_router.router, tags=["Seasons"])
 app.include_router(championship_router.router, tags=["Championships"])
 
 # Routers SQL
-app.include_router(user_router.router, prefix="/users", tags=["Users"])
+app.include_router(user_router.router, tags=["Users"])
 app.include_router(favorite_router.router, prefix="/favorites", tags=["Favorites"])
 app.include_router(comparison_router.router, prefix="/comparisons", tags=["Comparisons"])
-app.include_router(login_router.router, tags=["Users"])
+app.include_router(login_router.router, tags=["Authentication"])
 
 
 # Healthcheck
