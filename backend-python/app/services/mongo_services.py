@@ -12,7 +12,20 @@ def serialize_doc(doc):
 # Operaciones CRUD genéricas (SIN await, PyMongo es síncrono)
 def get_one_by_field(collection_name: str, field: str, value: str):
     collection = get_collection(collection_name)
-    result = collection.find_one({field: value})
+    
+    # Para driver_id, buscar tanto string como int (debido a datos mixtos)
+    if field == "driver_id":
+        # Intentar convertir a int si es posible
+        try:
+            int_value = int(value)
+            # Buscar por string O int
+            result = collection.find_one({"$or": [{field: value}, {field: int_value}]})
+        except ValueError:
+            # Si no es numérico, buscar solo como string
+            result = collection.find_one({field: value})
+    else:
+        result = collection.find_one({field: value})
+    
     return serialize_doc(result)
 
 def get_all(collection_name: str):

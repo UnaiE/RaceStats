@@ -10,9 +10,10 @@ def get_all_drivers():
     return driver_controller.get_all_drivers()
 
 @router.get("/{driver_id}", summary="Obtener piloto por ID")
-def get_driver(driver_id: str):
-    """Devuelve un piloto específico por su driver_id."""
-    return driver_controller.get_driver(driver_id)
+def get_driver(driver_id: int):
+    """Devuelve un piloto específico por su driver_id (número del piloto)."""
+    # Convertir int a string porque MongoDB guarda driver_id como string
+    return driver_controller.get_driver(str(driver_id))
 
 @router.post("/refresh", summary="Actualizar pilotos desde OpenF1")
 async def refresh_drivers():
