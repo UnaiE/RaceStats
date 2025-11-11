@@ -203,6 +203,61 @@ def import_championships():
     return {"imported": championship_count}
 
 
+# === CARS ===
+def import_cars():
+    """
+    Importa coches usando datos de equipos existentes de OpenF1.
+    Genera un registro por cada equipo en temporadas disponibles.
+    """
+    print("⏳ Importando coches desde datos de equipos...")
+    
+    cars_collection = get_collection("cars")
+    teams_collection = get_collection("teams")
+    races_collection = get_collection("races")
+    
+    # Obtener años únicos de las carreras
+    years = races_collection.distinct("year")
+    
+    car_count = 0
+    
+    # Para cada equipo, crear un coche por cada año disponible
+    for team in teams_collection.find():
+        team_id = team.get("team_id")
+        team_name = team.get("name")
+        team_colour = team.get("colour")
+        
+        if not team_id or not team_name:
+            continue
+        
+        # Crear un coche por cada año
+        for year in years:
+            if year:  # Validar que year no sea None
+                car_id = f"{team_id}_{year}"
+                
+                doc = {
+                    "car_id": car_id,
+                    "constructor_id": team_id,
+                    "team_name": team_name,
+                    "year": int(year) if isinstance(year, str) else year,
+                    "team_colour": team_colour,
+                    "nationality": None,  # No disponible en OpenF1
+                    "url": None,
+                }
+                
+                cars_collection.update_one(
+                    {"car_id": car_id},
+                    {"$set": doc},
+                    upsert=True
+                )
+                car_count += 1
+    
+    print(f"✅ {car_count} coches generados.")
+    return {"imported": car_count}
+
+    print(f"✅ {championship_count} campeonatos generados.")
+    return {"imported": championship_count}
+
+
 # === MAIN ENTRY ===
 def import_all_openf1_data():
     """Carga completa de datos históricos básicos de OpenF1."""
@@ -215,6 +270,7 @@ def import_all_openf1_data():
         "circuits": import_circuits(),
         "seasons": import_seasons(),
         "championships": import_championships(),
+        "cars": import_cars(),
     }
     
     print("✅ Importación completada.")

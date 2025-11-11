@@ -2,16 +2,14 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 class Car(BaseModel):
-    id: Optional[str] = Field(None, alias="_id") # ID interno de MongoDB
-    car_id: str # ID externo
-    name: str
-    model_year: int
-    team: Optional[str] = None
-    engine: Optional[str] = None
-    weight_kg: Optional[float] = None
-    top_speed_kmh: Optional[float] = None
-    acceleration_0_100: Optional[float] = None
-    power_hp: Optional[int] = None
+    id: Optional[str] = Field(None, alias="_id")
+    car_id: str  # Ej: "red_bull_2023", "ferrari_2024"
+    constructor_id: str  # De Ergast: "red_bull", "ferrari"
+    team_name: str  # Nombre del equipo
+    year: int  # Temporada
+    nationality: Optional[str] = None  # De Ergast
+    team_colour: Optional[str] = None  # De OpenF1
+    url: Optional[str] = None  # Wikipedia URL de Ergast
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Pydantic v2

@@ -1,13 +1,17 @@
 import httpx
-from app.services.mongo_services import create
+from app.resources.db_mongo import get_collection
 
-BASE_URL = "https://ergast.com/api/f1"
+BASE_URL = "http://ergast.com/api/f1"
 
-async def fetch_drivers(season: int = None):
+def fetch_drivers(season: int = None):
+    """Importa pilotos desde Ergast API (síncrono)."""
     url = f"{BASE_URL}/{season}/drivers.json" if season else f"{BASE_URL}/drivers.json"
-    async with httpx.AsyncClient() as client:
-        r = await client.get(url)
+    
+    with httpx.Client(timeout=30.0) as client:
+        r = client.get(url)
         data = r.json()["MRData"]["DriverTable"]["Drivers"]
+        
+        drivers_collection = get_collection("drivers")
         for d in data:
             driver = {
                 "driver_id": d["driverId"],
@@ -16,4 +20,21 @@ async def fetch_drivers(season: int = None):
                 "nationality": d["nationality"],
                 "date_of_birth": d["dateOfBirth"]
             }
-            await create("drivers", driver)
+            drivers_collection.update_one(
+                {"driver_id": driver["driver_id"]},
+                {"$set": driver},
+                upsert=True
+            )
+
+
+def fetch_constructors_by_year(year: int):
+    """
+    Obtiene constructores/equipos de una temporada específica desde Ergast API.
+    Retorna lista de constructores con sus datos.
+    """
+    url = f"{BASE_URL}/{year}/constructors.json"
+    
+    with httpx.Client(timeout=30.0) as client:
+        r = client.get(url)
+        data = r.json()["MRData"]["ConstructorTable"]["Constructors"]
+        return data
