@@ -9,11 +9,10 @@ def get_all_drivers():
     """Devuelve todos los pilotos almacenados en MongoDB."""
     return driver_controller.get_all_drivers()
 
-@router.get("/{driver_id}", summary="Obtener piloto por ID")
-def get_driver(driver_id: int):
-    """Devuelve un piloto específico por su driver_id (número del piloto)."""
-    # Convertir int a string porque MongoDB guarda driver_id como string
-    return driver_controller.get_driver(str(driver_id))
+@router.get("/{driver_number}", summary="Obtener piloto por número")
+def get_driver(driver_number: int):
+    """Obtener piloto por número de piloto (ej: 1 para Verstappen, 44 para Hamilton)"""
+    return driver_controller.get_driver(str(driver_number))
 
 @router.post("/refresh", summary="Actualizar pilotos desde OpenF1")
 def refresh_drivers():

@@ -14,6 +14,7 @@ def read_cars():
 
 @router.get("/{car_id}", response_model=Car)
 def read_car(car_id: str):
+    """Obtener coche por car_id"""
     return get_car(car_id)
 
 @router.post("/", response_model=Car)
@@ -22,8 +23,10 @@ def create_car(car: Car):
 
 @router.put("/{car_id}", response_model=Car)
 def update_car(car_id: str, car: Car):
+    """Actualizar coche por car_id"""
     return update_car_controller(car_id, car.dict())
 
 @router.delete("/{car_id}")
 def delete_car(car_id: str):
+    """Eliminar coche por car_id"""
     return delete_car_controller(car_id)

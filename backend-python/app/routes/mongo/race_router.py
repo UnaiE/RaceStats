@@ -13,21 +13,24 @@ router = APIRouter(prefix="/races", tags=["Races"])
 def read_races():
     return get_all_races()
 
-@router.get("/{race_id}", response_model=Race)
-def read_race(race_id: str):
-    return get_race(race_id)
+@router.get("/{race_id}", response_model=Race, summary="Obtener carrera por race_id")
+def read_race(race_id: int):
+    """Obtener carrera por race_id (session_key, ej: 7953, 9472)"""
+    return get_race(str(race_id))
 
 @router.post("/", response_model=Race)
 def create_race(race: Race):
     return create_race_controller(race.dict())
 
-@router.put("/{race_id}", response_model=Race)
-def update_race(race_id: str, race: Race):
-    return update_race_controller(race_id, race.dict())
+@router.put("/{race_id}", response_model=Race, summary="Actualizar carrera")
+def update_race(race_id: int, race: Race):
+    """Actualizar carrera por race_id"""
+    return update_race_controller(str(race_id), race.dict())
 
-@router.delete("/{race_id}")
-def delete_race(race_id: str):
-    return delete_race_controller(race_id)
+@router.delete("/{race_id}", summary="Eliminar carrera")
+def delete_race(race_id: int):
+    """Eliminar carrera por race_id"""
+    return delete_race_controller(str(race_id))
 
 @router.post("/refresh", summary="Actualizar carreras desde OpenF1")
 def refresh_races(year: Optional[int] = None):

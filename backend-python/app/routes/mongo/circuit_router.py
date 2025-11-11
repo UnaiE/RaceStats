@@ -13,25 +13,28 @@ router = APIRouter(prefix="/circuits", tags=["Circuits"])
 def read_circuits():
     return get_all_circuits()
 
-@router.get("/{circuit_id}", response_model=Circuit)
-def read_circuit(circuit_id: str):
-    return get_circuit(circuit_id)
+@router.get("/{circuit_key}", response_model=Circuit, summary="Obtener circuito por circuit_key")
+def read_circuit(circuit_key: int):
+    """Obtener circuito por circuit_key (ej: 63 para Sakhir)"""
+    return get_circuit(str(circuit_key))
 
 @router.post("/refresh", summary="Actualizar circuitos desde OpenF1")
 def refresh_circuits():
     """Descarga datos actualizados de circuitos desde OpenF1 API."""
-    import_circuits()
-    return {"message": "✅ Circuitos actualizados desde OpenF1"}
+    result = import_circuits()
+    return {"message": "✅ Circuitos actualizados desde OpenF1", "stats": result}
 
 @router.post("/", response_model=Circuit)
 def create_circuit(circuit: Circuit):
     return create_circuit_controller(circuit.dict())
 
-@router.put("/{circuit_id}", response_model=Circuit)
-def update_circuit(circuit_id: str, circuit: Circuit):
-    return update_circuit_controller(circuit_id, circuit.dict())
+@router.put("/{circuit_key}", response_model=Circuit, summary="Actualizar circuito")
+def update_circuit(circuit_key: int, circuit: Circuit):
+    """Actualizar circuito por circuit_key"""
+    return update_circuit_controller(str(circuit_key), circuit.dict())
 
-@router.delete("/{circuit_id}")
-def delete_circuit(circuit_id: str):
-    return delete_circuit_controller(circuit_id)
+@router.delete("/{circuit_key}", summary="Eliminar circuito")
+def delete_circuit(circuit_key: int):
+    """Eliminar circuito por circuit_key"""
+    return delete_circuit_controller(str(circuit_key))
 

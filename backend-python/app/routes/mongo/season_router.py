@@ -13,9 +13,10 @@ router = APIRouter(prefix="/seasons", tags=["Seasons"])
 def read_seasons():
     return get_all_seasons()
 
-@router.get("/{season_id}", response_model=Season)
-def read_season(season_id: str):
-    return get_season(season_id)
+@router.get("/{year}", response_model=Season, summary="Obtener temporada por año")
+def read_season(year: int):
+    """Obtener temporada por año (ej: 2023, 2024, 2025)"""
+    return get_season(str(year))
 
 @router.post("/refresh", summary="Actualizar temporadas desde carreras")
 def refresh_seasons():
@@ -27,11 +28,13 @@ def refresh_seasons():
 def create_season(season: Season):
     return create_season_controller(season.dict())
 
-@router.put("/{season_id}", response_model=Season)
-def update_season(season_id: str, season: Season):
-    return update_season_controller(season_id, season.dict())
+@router.put("/{year}", response_model=Season, summary="Actualizar temporada")
+def update_season(year: int, season: Season):
+    """Actualizar temporada por año"""
+    return update_season_controller(str(year), season.dict())
 
-@router.delete("/{season_id}")
-def delete_season(season_id: str):
-    return delete_season_controller(season_id)
+@router.delete("/{year}", summary="Eliminar temporada")
+def delete_season(year: int):
+    """Eliminar temporada por año"""
+    return delete_season_controller(str(year))
 
