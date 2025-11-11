@@ -4,9 +4,18 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import DriversPage from "./pages/DriversPage";
+import DriverDetailPage from "./pages/DriverDetailPage";
 import TeamsPage from "./pages/TeamsPage";
+import TeamDetailPage from "./pages/TeamDetailPage";
 import RacesPage from "./pages/RacesPage";
+import RaceDetailPage from "./pages/RaceDetailPage";
 import { CircuitsPage, SeasonsPage, ChampionshipsPage, CarsPage } from "./pages/OtherPages";
+import { 
+  CircuitDetailPage, 
+  SeasonDetailPage, 
+  ChampionshipDetailPage, 
+  CarDetailPage 
+} from "./pages/DetailPages";
 
 // Componente para proteger rutas
 function PrivateRoute({ children }) {
@@ -71,10 +80,26 @@ function App() {
             }
           />
           <Route
+            path="/drivers/:driverId"
+            element={
+              <PrivateRoute>
+                <DriverDetailPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/teams"
             element={
               <PrivateRoute>
                 <TeamsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/teams/:teamId"
+            element={
+              <PrivateRoute>
+                <TeamDetailPage />
               </PrivateRoute>
             }
           />
@@ -87,10 +112,26 @@ function App() {
             }
           />
           <Route
+            path="/races/:raceId"
+            element={
+              <PrivateRoute>
+                <RaceDetailPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/circuits"
             element={
               <PrivateRoute>
                 <CircuitsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/circuits/:circuitId"
+            element={
+              <PrivateRoute>
+                <CircuitDetailPage />
               </PrivateRoute>
             }
           />
@@ -103,6 +144,14 @@ function App() {
             }
           />
           <Route
+            path="/seasons/:seasonId"
+            element={
+              <PrivateRoute>
+                <SeasonDetailPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/championships"
             element={
               <PrivateRoute>
@@ -111,10 +160,26 @@ function App() {
             }
           />
           <Route
+            path="/championships/:championshipId"
+            element={
+              <PrivateRoute>
+                <ChampionshipDetailPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/cars"
             element={
               <PrivateRoute>
                 <CarsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/cars/:carId"
+            element={
+              <PrivateRoute>
+                <CarDetailPage />
               </PrivateRoute>
             }
           />

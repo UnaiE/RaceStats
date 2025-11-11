@@ -53,7 +53,10 @@ const createListPage = (config) => {
             {items.map((item, index) => (
               <div
                 key={item[config.idField] || index}
-                className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow p-6"
+                onClick={() => config.onCardClick && config.onCardClick(item, navigate)}
+                className={`bg-white rounded-lg shadow-md hover:shadow-xl transition-all p-6 ${
+                  config.onCardClick ? 'cursor-pointer hover:scale-105 transform' : ''
+                }`}
               >
                 {config.renderCard(item)}
               </div>
@@ -71,6 +74,9 @@ export const CircuitsPage = createListPage({
   icon: "🛣️",
   endpoint: "circuits",
   idField: "circuit_key",
+  onCardClick: (circuit, navigate) => {
+    navigate(`/circuits/${circuit.circuit_key || circuit.circuit_id}`);
+  },
   renderCard: (circuit) => (
     <>
       <h3 className="text-lg font-bold text-gray-800 mb-2">
@@ -92,6 +98,9 @@ export const SeasonsPage = createListPage({
   icon: "📅",
   endpoint: "seasons",
   idField: "year",
+  onCardClick: (season, navigate) => {
+    navigate(`/seasons/${season.year}`);
+  },
   renderCard: (season) => (
     <>
       <div className="text-4xl font-bold text-blue-600 mb-2">{season.year}</div>
@@ -113,6 +122,9 @@ export const ChampionshipsPage = createListPage({
   icon: "🏆",
   endpoint: "championships",
   idField: "championship_id",
+  onCardClick: (championship, navigate) => {
+    navigate(`/championships/${championship.championship_id}`);
+  },
   renderCard: (championship) => (
     <>
       <h3 className="text-lg font-bold text-gray-800 mb-2">
@@ -134,6 +146,9 @@ export const CarsPage = createListPage({
   icon: "🚗",
   endpoint: "cars",
   idField: "car_id",
+  onCardClick: (car, navigate) => {
+    navigate(`/cars/${car.car_id || car.car_number}`);
+  },
   renderCard: (car) => (
     <>
       <div

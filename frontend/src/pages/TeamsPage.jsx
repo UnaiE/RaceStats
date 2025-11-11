@@ -52,16 +52,32 @@ export default function TeamsPage() {
           {teams.map((team) => (
             <div
               key={team.team_id || team.team_name}
-              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow p-6"
+              onClick={() => navigate(`/teams/${team.team_id || encodeURIComponent(team.team_name || team.name)}`)}
+              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 cursor-pointer transform hover:scale-105"
             >
               <div
-                className="w-full h-2 rounded-t-lg mb-4"
+                className="w-full h-3 rounded-t-lg mb-4"
                 style={{ backgroundColor: team.colour || team.team_colour || "#3B82F6" }}
               />
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
+              
+              {/* Logo del equipo */}
+              {team.logo && (
+                <div className="flex justify-center mb-4">
+                  <img
+                    src={team.logo}
+                    alt={`${team.name || team.team_name} logo`}
+                    className="h-16 object-contain"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
+                </div>
+              )}
+              
+              <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">
                 {team.name || team.team_name}
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-600 text-sm text-center">
                 {team.country || team.nationality || "País no especificado"}
               </p>
             </div>

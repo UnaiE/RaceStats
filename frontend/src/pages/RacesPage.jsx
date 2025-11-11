@@ -51,22 +51,32 @@ export default function RacesPage() {
           {races.map((race) => (
             <div
               key={race.race_id || race.session_key}
-              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow p-6"
+              onClick={() => navigate(`/races/${race.session_key || race.race_id}`)}
+              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 cursor-pointer transform hover:scale-105"
             >
               <div className="flex items-start justify-between mb-3">
                 <h3 className="text-lg font-bold text-gray-800">
                   {race.meeting_name || race.race_name || "Carrera"}
                 </h3>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded font-semibold">
                   {race.year}
                 </span>
               </div>
               <p className="text-sm text-gray-600 mb-2">
                 📍 {race.location || race.circuit_short_name || "Ubicación"}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 mb-3">
                 {race.country_name || race.country_code}
               </p>
+              {race.date_start && (
+                <p className="text-xs text-gray-400 mt-2">
+                  {new Date(race.date_start).toLocaleDateString("es-ES", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+              )}
             </div>
           ))}
         </div>

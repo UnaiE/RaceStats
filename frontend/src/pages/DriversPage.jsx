@@ -93,7 +93,8 @@ export default function DriversPage() {
           {drivers.map((driver) => (
             <div
               key={driver.driver_id || driver.driver_number}
-              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden"
+              onClick={() => navigate(`/drivers/${driver.driver_number || driver.driver_id}`)}
+              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105"
             >
               <div className="p-6">
                 {/* Driver Number Badge */}

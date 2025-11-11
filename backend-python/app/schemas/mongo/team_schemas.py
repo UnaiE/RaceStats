@@ -6,6 +6,7 @@ class Team(BaseModel):
     team_id: str
     name: str
     colour: Optional[str] = None
+    logo: Optional[str] = None  # URL del logo del equipo
 
     class Config:
         from_attributes = True  # Actualizado de orm_mode para Pydantic v2
