@@ -145,6 +145,64 @@ def import_seasons():
     return {"imported": len(years)}
 
 
+# === CIRCUITS ===
+def import_circuits():
+    """Importa circuitos únicos desde carreras guardadas."""
+    print("⏳ Importando circuitos desde datos de carreras...")
+    races_collection = get_collection("races")
+    circuits_collection = get_collection("circuits")
+
+    # Extraer circuitos únicos de las carreras
+    unique_circuits = {}
+    for race in races_collection.find():
+        circuit_key = race.get("circuit_key")
+        if circuit_key and circuit_key not in unique_circuits:
+            unique_circuits[circuit_key] = {
+                "circuit_key": circuit_key,
+                "circuit_short_name": race.get("circuit_short_name", f"Circuit {circuit_key}"),
+            }
+
+    for circuit in unique_circuits.values():
+        circuits_collection.update_one(
+            {"circuit_key": circuit["circuit_key"]},
+            {"$set": circuit},
+            upsert=True
+        )
+
+    print(f"✅ {len(unique_circuits)} circuitos guardados.")
+    return {"imported": len(unique_circuits)}
+
+
+# === CHAMPIONSHIPS ===
+def import_championships():
+    """Genera campeonatos basándose en temporadas."""
+    print("⏳ Generando campeonatos desde temporadas...")
+    seasons_collection = get_collection("seasons")
+    championships_collection = get_collection("championships")
+
+    # Crear un campeonato por cada temporada
+    championship_count = 0
+    for season in seasons_collection.find():
+        year = season.get("year")
+        if year:
+            championship_id = f"f1_{year}"
+            doc = {
+                "championship_id": championship_id,
+                "name": f"Formula 1 World Championship {year}",
+                "year": year,
+                "season_count": 1,
+            }
+            championships_collection.update_one(
+                {"championship_id": championship_id},
+                {"$set": doc},
+                upsert=True
+            )
+            championship_count += 1
+
+    print(f"✅ {championship_count} campeonatos generados.")
+    return {"imported": championship_count}
+
+
 # === MAIN ENTRY ===
 def import_all_openf1_data():
     """Carga completa de datos históricos básicos de OpenF1."""
@@ -154,7 +212,9 @@ def import_all_openf1_data():
         "drivers": import_drivers(),
         "teams": import_teams(),
         "races": import_races(),
+        "circuits": import_circuits(),
         "seasons": import_seasons(),
+        "championships": import_championships(),
     }
     
     print("✅ Importación completada.")

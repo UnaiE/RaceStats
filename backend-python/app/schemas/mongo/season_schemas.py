@@ -1,14 +1,10 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, Union
 
 class Season(BaseModel):
     id: Optional[str] = Field(None, alias="_id")
-    season_id: str
-    year: int
-    champion_driver: Optional[str] = None
-    champion_team: Optional[str] = None
-    races: Optional[List[str]] = []
-    status: str = "finished"
+    year: Union[str, int]
+    race_count: int = 0
 
     class Config:
-        orm_mode = True
+        from_attributes = True

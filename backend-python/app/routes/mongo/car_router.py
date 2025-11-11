@@ -9,21 +9,21 @@ from app.schemas.mongo.car_schemas import Car
 router = APIRouter(prefix="/cars", tags=["Cars"])
 
 @router.get("/", response_model=List[Car])
-async def read_cars():
-    return await get_all_cars()
+def read_cars():
+    return get_all_cars()
 
 @router.get("/{car_id}", response_model=Car)
-async def read_car(car_id: str):
-    return await get_car(car_id)
+def read_car(car_id: str):
+    return get_car(car_id)
 
 @router.post("/", response_model=Car)
-async def create_car(car: Car):
-    return await create_car_controller(car.dict())
+def create_car(car: Car):
+    return create_car_controller(car.dict())
 
 @router.put("/{car_id}", response_model=Car)
-async def update_car(car_id: str, car: Car):
-    return await update_car_controller(car_id, car.dict())
+def update_car(car_id: str, car: Car):
+    return update_car_controller(car_id, car.dict())
 
 @router.delete("/{car_id}")
-async def delete_car(car_id: str):
-    return await delete_car_controller(car_id)
+def delete_car(car_id: str):
+    return delete_car_controller(car_id)

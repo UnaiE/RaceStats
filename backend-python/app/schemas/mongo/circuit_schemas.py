@@ -3,14 +3,8 @@ from typing import Optional
 
 class Circuit(BaseModel):
     id: Optional[str] = Field(None, alias="_id")
-    circuit_id: str
-    name: str
-    location: Optional[str] = None
-    country: Optional[str] = None
-    length_km: Optional[float] = None
-    turns: Optional[int] = None
-    first_gp_year: Optional[int] = None
-    lap_record: Optional[str] = None
-
+    circuit_key: int
+    circuit_short_name: str
+    
     class Config:
-        orm_mode = True
+        from_attributes = True
