@@ -31,10 +31,18 @@ export default function RaceDetailPage() {
       setRace(foundRace);
 
       // Intentar obtener resultados desde Ergast API
+      // Prioridad 1: Si tiene year y round
       if (foundRace.year && foundRace.round) {
+        console.log(`🔍 Buscando resultados: ${foundRace.year}/round/${foundRace.round}`);
         await fetchRaceResults(foundRace.year, foundRace.round);
-      } else if (foundRace.year && foundRace.location) {
+      } 
+      // Prioridad 2: Si solo tiene year, intentar búsqueda por ubicación
+      else if (foundRace.year && foundRace.location) {
+        console.log(`🔍 Buscando resultados por ubicación: ${foundRace.year}/${foundRace.location}`);
         await fetchRaceResultsByLocation(foundRace.year, foundRace.location);
+      }
+      else {
+        console.log("⚠️ No se puede buscar resultados: faltan year o round");
       }
       
     } catch (err) {
@@ -53,11 +61,16 @@ export default function RaceDetailPage() {
       if (response.ok) {
         const data = await response.json();
         const results = data.MRData?.RaceTable?.Races?.[0]?.Results || [];
-        setStandings(results);
-        console.log("✅ Resultados obtenidos desde Ergast");
+        
+        if (results.length > 0) {
+          setStandings(results);
+          console.log(`✅ Resultados obtenidos desde Ergast: ${results.length} pilotos`);
+        } else {
+          console.log(`⚠️ Ergast no tiene resultados para ${year}/round/${round} (carrera futura o sprint)`);
+        }
       }
     } catch (error) {
-      console.log("⚠️ No se pudieron obtener resultados desde Ergast");
+      console.log("⚠️ Error al conectar con Ergast API:", error);
     }
   };
 

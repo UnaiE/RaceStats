@@ -111,7 +111,14 @@ export default function DriverDetailPage() {
                     {driver.driver_number || "?"}
                   </div>
                   {driver.country_code && (
-                    <span className="text-5xl">{driver.country_code}</span>
+                    <img
+                      src={`https://flagcdn.com/w80/${driver.country_code.toLowerCase()}.png`}
+                      alt={driver.country_code}
+                      className="h-12 w-auto rounded shadow-lg"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
                   )}
                 </div>
                 <h1 className="text-4xl font-bold mb-2">
@@ -145,7 +152,7 @@ export default function DriverDetailPage() {
               {driver.driver_number && (
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <p className="text-sm text-gray-600 font-semibold mb-1">
-                    Número de Piloto
+                    Número
                   </p>
                   <p className="text-2xl font-bold text-gray-900">
                     #{driver.driver_number}
@@ -177,21 +184,31 @@ export default function DriverDetailPage() {
                 </div>
               )}
 
-              {/* Country Code */}
+              {/* Country */}
               {driver.country_code && (
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <p className="text-sm text-gray-600 font-semibold mb-1">
-                    País
+                    Nacionalidad
                   </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {driver.country_code}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={`https://flagcdn.com/w40/${driver.country_code.toLowerCase()}.png`}
+                      alt={driver.country_code}
+                      className="h-6 w-auto rounded shadow"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
+                    <p className="text-lg font-bold text-gray-900">
+                      {driver.country_code}
+                    </p>
+                  </div>
                 </div>
               )}
 
               {/* Full Name */}
               {driver.full_name && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 md:col-span-2">
                   <p className="text-sm text-gray-600 font-semibold mb-1">
                     Nombre Completo
                   </p>
@@ -218,62 +235,7 @@ export default function DriverDetailPage() {
                   </div>
                 </div>
               )}
-
-              {/* Session Key */}
-              {driver.session_key && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">
-                    Session Key
-                  </p>
-                  <p className="text-lg font-mono text-gray-900">
-                    {driver.session_key}
-                  </p>
-                </div>
-              )}
-
-              {/* Meeting Key */}
-              {driver.meeting_key && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">
-                    Meeting Key
-                  </p>
-                  <p className="text-lg font-mono text-gray-900">
-                    {driver.meeting_key}
-                  </p>
-                </div>
-              )}
-
-              {/* Driver ID */}
-              {driver.driver_id && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">
-                    Driver ID
-                  </p>
-                  <p className="text-lg font-mono text-gray-900">
-                    {driver.driver_id}
-                  </p>
-                </div>
-              )}
             </div>
-
-            {/* Additional Images Section */}
-            {driver.headshot_url && (
-              <div className="mt-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Galería
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <img
-                    src={driver.headshot_url}
-                    alt={`${driver.full_name} - Headshot`}
-                    className="w-full h-auto rounded-lg shadow-lg"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </main>

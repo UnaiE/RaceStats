@@ -22,6 +22,9 @@ from app.routes.sql import (
     login_router  # router nuevo para login
 )
 
+# Weather router
+from app.routes import weather_router
+
 # DB init
 from app.resources.db_mongo import init_mongo
 from app.resources.db_sql import init_sql_db
@@ -72,6 +75,8 @@ app.include_router(favorite_router.router, prefix="/favorites", tags=["Favorites
 app.include_router(comparison_router.router, prefix="/comparisons", tags=["Comparisons"])
 app.include_router(login_router.router, tags=["Authentication"])
 
+# Weather router
+app.include_router(weather_router.router, tags=["Weather"])
 
 # Healthcheck
 @app.get("/")

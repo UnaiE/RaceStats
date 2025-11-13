@@ -25,3 +25,7 @@ Thumbs.db
 .env
 .env.*
 racestats.db
+
+# Development notes (temporary docs)
+WEATHER_API_PLAN.md
+AUTENTICACION.md

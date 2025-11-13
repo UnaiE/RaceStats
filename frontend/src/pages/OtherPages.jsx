@@ -11,7 +11,14 @@ const createListPage = (config) => {
       fetch(`http://localhost:8000/${config.endpoint}/`)
         .then((res) => res.json())
         .then((data) => {
-          setItems(data);
+          // Filtrar y procesar datos según configuración
+          let processedData = data;
+          
+          if (config.filterData) {
+            processedData = config.filterData(data);
+          }
+          
+          setItems(processedData);
           setLoading(false);
         })
         .catch(() => setLoading(false));
@@ -79,14 +86,36 @@ export const CircuitsPage = createListPage({
   },
   renderCard: (circuit) => (
     <>
+      {/* Imagen del circuito */}
+      <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+        <img
+          src={`https://media.formula1.com/image/upload/f_auto/q_auto/v1677244985/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/${circuit.circuit_short_name?.toLowerCase().replace(/ /g, '_')}_circuit.png`}
+          alt={circuit.circuit_short_name}
+          className="w-full h-full object-cover opacity-70"
+          onError={(e) => {
+            e.target.parentElement.innerHTML = '<span class="text-6xl opacity-20">🏁</span>';
+          }}
+        />
+      </div>
       <h3 className="text-lg font-bold text-gray-800 mb-2">
         {circuit.circuit_short_name || circuit.circuit_name || "Circuito"}
       </h3>
-      <p className="text-sm text-gray-600">
-        📍 {circuit.location || circuit.country}
-      </p>
-      {circuit.circuit_key && (
-        <p className="text-xs text-gray-500 mt-2">ID: {circuit.circuit_key}</p>
+      <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+        <span>📍</span>
+        <span>{circuit.location || circuit.country_name}</span>
+      </div>
+      {circuit.country_code && (
+        <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
+          <img
+            src={`https://flagcdn.com/w20/${circuit.country_code?.toLowerCase()}.png`}
+            alt={circuit.country_code}
+            className="h-3 w-auto rounded shadow-sm"
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
+          />
+          <span>{circuit.country_name || circuit.country_code}</span>
+        </div>
       )}
     </>
   ),
@@ -98,18 +127,39 @@ export const SeasonsPage = createListPage({
   icon: "📅",
   endpoint: "seasons",
   idField: "year",
+  filterData: (data) => {
+    // Filtrar duplicados y los que tienen 0 carreras
+    const validSeasons = data.filter(s => s.race_count > 0);
+    
+    // Agrupar por año y tomar el que tenga más carreras
+    const seasonsByYear = {};
+    validSeasons.forEach(season => {
+      const year = String(season.year);
+      if (!seasonsByYear[year] || seasonsByYear[year].race_count < season.race_count) {
+        seasonsByYear[year] = season;
+      }
+    });
+    
+    // Convertir a array y ordenar por año descendente
+    return Object.values(seasonsByYear).sort((a, b) => 
+      parseInt(String(b.year)) - parseInt(String(a.year))
+    );
+  },
   onCardClick: (season, navigate) => {
     navigate(`/seasons/${season.year}`);
   },
   renderCard: (season) => (
     <>
-      <div className="text-4xl font-bold text-blue-600 mb-2">{season.year}</div>
-      <p className="text-sm text-gray-600">
-        🏁 {season.race_count || 0} carreras
-      </p>
+      <div className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-3">
+        {season.year}
+      </div>
+      <div className="flex items-center gap-2 text-gray-700 mb-2">
+        <span className="text-xl">🏁</span>
+        <span className="text-lg font-semibold">{season.race_count} carreras</span>
+      </div>
       {season.start_date && (
         <p className="text-xs text-gray-500 mt-2">
-          Inicio: {new Date(season.start_date).toLocaleDateString()}
+          Inicio: {new Date(season.start_date).toLocaleDateString("es-ES")}
         </p>
       )}
     </>

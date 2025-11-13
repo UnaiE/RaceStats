@@ -47,36 +47,63 @@ export default function RacesPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {races.map((race) => (
             <div
               key={race.race_id || race.session_key}
               onClick={() => navigate(`/races/${race.session_key || race.race_id}`)}
-              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 cursor-pointer transform hover:scale-105"
+              className="bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 group"
             >
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="text-lg font-bold text-gray-800">
-                  {race.meeting_name || race.race_name || "Carrera"}
-                </h3>
-                <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded font-semibold">
-                  {race.year}
-                </span>
+              {/* Banner superior con año */}
+              <div className="h-2 bg-gradient-to-r from-red-600 to-red-800" />
+              
+              <div className="p-5">
+                {/* Título y año */}
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-base font-bold text-gray-900 leading-tight flex-1 group-hover:text-red-600 transition-colors">
+                    {race.meeting_name || race.race_name || "Carrera"}
+                  </h3>
+                  <span className="text-xs bg-red-600 text-white px-2 py-1 rounded-full font-bold ml-2 flex-shrink-0">
+                    {race.year}
+                  </span>
+                </div>
+
+                {/* Ubicación con bandera */}
+                <div className="space-y-2 mb-3">
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <span className="text-lg">📍</span>
+                    <span className="font-semibold">{race.location || race.circuit_short_name}</span>
+                  </div>
+                  
+                  {race.country_code && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <img
+                        src={`https://flagcdn.com/w20/${race.country_code.toLowerCase()}.png`}
+                        alt={race.country_code}
+                        className="h-4 w-auto rounded shadow-sm"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                      />
+                      <span>{race.country_name || race.country_code}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Fecha */}
+                {race.date_start && (
+                  <div className="pt-3 border-t border-gray-100">
+                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                      <span>🗓️</span>
+                      {new Date(race.date_start).toLocaleDateString("es-ES", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                )}
               </div>
-              <p className="text-sm text-gray-600 mb-2">
-                📍 {race.location || race.circuit_short_name || "Ubicación"}
-              </p>
-              <p className="text-xs text-gray-500 mb-3">
-                {race.country_name || race.country_code}
-              </p>
-              {race.date_start && (
-                <p className="text-xs text-gray-400 mt-2">
-                  {new Date(race.date_start).toLocaleDateString("es-ES", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
-              )}
             </div>
           ))}
         </div>

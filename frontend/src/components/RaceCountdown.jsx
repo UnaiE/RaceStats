@@ -4,6 +4,7 @@ import { useCountdown } from "../hooks/useCountdown";
 export default function RaceCountdown() {
   const [nextRace, setNextRace] = useState(null);
   const [lastPodium, setLastPodium] = useState([]);
+  const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [seasonProgress, setSeasonProgress] = useState(0);
   const [error, setError] = useState(null);
@@ -140,13 +141,44 @@ export default function RaceCountdown() {
       }
 
       // Obtener podio real desde Ergast API
-      await fetchRealPodium(nextRace || futureRaces[0] || pastRaces[0]);
+      const selectedRace = nextRace || futureRaces[0] || pastRaces[0];
+      await fetchRealPodium(selectedRace);
+      
+      // Obtener pronóstico del tiempo
+      if (selectedRace) {
+        await fetchWeather(selectedRace);
+      }
 
     } catch (error) {
       console.error("❌ Error fetching race data:", error);
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchWeather = async (race) => {
+    if (!race || !race.location) return;
+
+    try {
+      const location = race.location;
+      const raceDate = race.date_start;
+      
+      let url = `http://localhost:8000/weather/${encodeURIComponent(location)}`;
+      if (raceDate) {
+        url += `?race_date=${encodeURIComponent(raceDate)}`;
+      }
+      
+      const response = await fetch(url);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setWeather(data);
+        console.log("✅ Pronóstico del tiempo obtenido");
+      }
+    } catch (error) {
+      console.log("⚠️ No se pudo obtener pronóstico del tiempo");
+      setWeather(null);
     }
   };
 
@@ -282,6 +314,67 @@ export default function RaceCountdown() {
                 </div>
               </div>
             </div>
+
+            {/* Weather Forecast */}
+            {weather && weather.forecast && weather.forecast.length > 0 && (
+              <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                <h4 className="text-gray-900 text-sm font-semibold mb-3 flex items-center gap-2">
+                  <span>🌤️</span>
+                  Pronóstico del Fin de Semana
+                </h4>
+                <div className="grid grid-cols-3 gap-2">
+                  {weather.forecast.map((day, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg p-2 border border-gray-200 text-center"
+                    >
+                      {/* Day */}
+                      <div className="text-xs font-semibold text-gray-900 mb-1">
+                        {day.day_name} {day.day_number}
+                      </div>
+                      <div className="text-[10px] text-gray-500 mb-2">
+                        {index === 0 && "🏁 Prácticas"}
+                        {index === 1 && "⏱️ Clasificación"}
+                        {index === 2 && "🏆 Carrera"}
+                      </div>
+                      {/* Weather icon emoji */}
+                      <div className="text-2xl mb-1">
+                        {day.condition?.toLowerCase().includes("lluv") && "🌧️"}
+                        {day.condition?.toLowerCase().includes("llovizn") && "🌦️"}
+                        {day.condition?.toLowerCase().includes("nublad") && "☁️"}
+                        {day.condition?.toLowerCase().includes("soleado") && "☀️"}
+                        {day.condition?.toLowerCase().includes("despej") && "🌤️"}
+                        {!day.condition?.toLowerCase().includes("lluv") &&
+                          !day.condition?.toLowerCase().includes("llovizn") &&
+                          !day.condition?.toLowerCase().includes("nublad") &&
+                          !day.condition?.toLowerCase().includes("soleado") &&
+                          !day.condition?.toLowerCase().includes("despej") &&
+                          "🌤️"}
+                      </div>
+                      {/* Condition */}
+                      <div className="text-[10px] text-gray-600 mb-1 truncate">
+                        {day.condition}
+                      </div>
+                      {/* Temps */}
+                      <div className="flex justify-center gap-1 text-xs mb-1">
+                        <span className="text-red-600 font-bold">
+                          {Math.round(day.max_temp)}°
+                        </span>
+                        <span className="text-blue-600">
+                          {Math.round(day.min_temp)}°
+                        </span>
+                      </div>
+                      {/* Rain */}
+                      {day.rain_mm > 0 && (
+                        <div className="text-[10px] text-blue-600">
+                          💧 {day.rain_mm}mm
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Last Podium - Solo mostrar si hay datos */}
             {lastPodium.length > 0 && (

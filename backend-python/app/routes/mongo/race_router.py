@@ -9,8 +9,9 @@ from app.services.openf1_import_service import import_races
 
 router = APIRouter(prefix="/races", tags=["Races"])
 
-@router.get("/", response_model=List[Race])
+@router.get("/")
 def read_races():
+    """Obtener todas las carreras sin validación de modelo para incluir todos los campos"""
     return get_all_races()
 
 @router.get("/{race_id}", response_model=Race, summary="Obtener carrera por race_id")

@@ -41,6 +41,8 @@ services:
       MONGO_URI: mongodb://mongo:27017/racestats
       # CORS
       FRONTEND_URL: http://localhost:5173
+      # Weather API (register at https://www.weatherapi.com/)
+      WEATHER_API_KEY: ${WEATHER_API_KEY:-your_api_key_here}
     volumes:
       - ./backend-python:/app
 
