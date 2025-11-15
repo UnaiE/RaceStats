@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 export default function DriverDetailPage() {
   const [driver, setDriver] = useState(null);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -14,14 +15,14 @@ export default function DriverDetailPage() {
 
   const fetchDriverDetails = async () => {
     try {
-      // Obtener todos los pilotos y buscar el específico
+      // Obtener información básica del piloto
       const response = await fetch("http://localhost:8000/drivers/");
       if (!response.ok) throw new Error("Error al cargar piloto");
       const data = await response.json();
       
-      // Buscar el piloto por driver_number o driver_id
+      // Buscar el piloto por driver_id
       const foundDriver = data.find(
-        (d) => String(d.driver_number) === driverId || String(d.driver_id) === driverId
+        (d) => String(d.driver_id) === driverId
       );
       
       if (!foundDriver) {
@@ -29,6 +30,18 @@ export default function DriverDetailPage() {
       }
       
       setDriver(foundDriver);
+      
+      // Obtener estadísticas completas
+      try {
+        const statsResponse = await fetch(`http://localhost:8000/drivers/${foundDriver.driver_id}/stats`);
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats(statsData);
+        }
+      } catch (err) {
+        console.warn("No se pudieron cargar las estadísticas completas:", err);
+      }
+      
     } catch (err) {
       setError(err.message);
     } finally {
@@ -108,7 +121,7 @@ export default function DriverDetailPage() {
                   <div
                     className="bg-white text-gray-900 w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg"
                   >
-                    {driver.driver_number || "?"}
+                    {driver.driver_id || "?"}
                   </div>
                   {driver.country_code && (
                     <img
@@ -141,21 +154,138 @@ export default function DriverDetailPage() {
             </div>
           </div>
 
+          {/* Career Statistics Section */}
+          {stats && (
+            <div className="p-8 bg-gray-50 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                📊 Estadísticas de Carrera
+              </h2>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {/* Age */}
+                {stats.age && (
+                  <div className="bg-white rounded-lg p-4 border-2 border-gray-200 text-center">
+                    <p className="text-sm text-gray-600 font-semibold mb-1">
+                      🎂 Edad
+                    </p>
+                    <p className="text-3xl font-bold text-red-600">
+                      {stats.age}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">años</p>
+                  </div>
+                )}
+
+                {/* Championships */}
+                <div className="bg-white rounded-lg p-4 border-2 border-yellow-400 text-center">
+                  <p className="text-sm text-gray-600 font-semibold mb-1">
+                    🏆 Campeonatos
+                  </p>
+                  <p className="text-3xl font-bold text-yellow-600">
+                    {stats.championships || 0}
+                  </p>
+                </div>
+
+                {/* Wins */}
+                <div className="bg-white rounded-lg p-4 border-2 border-green-400 text-center">
+                  <p className="text-sm text-gray-600 font-semibold mb-1">
+                    🏁 Victorias
+                  </p>
+                  <p className="text-3xl font-bold text-green-600">
+                    {stats.wins || 0}
+                  </p>
+                </div>
+
+                {/* Poles */}
+                <div className="bg-white rounded-lg p-4 border-2 border-purple-400 text-center">
+                  <p className="text-sm text-gray-600 font-semibold mb-1">
+                    ⚡ Poles
+                  </p>
+                  <p className="text-3xl font-bold text-purple-600">
+                    {stats.poles || 0}
+                  </p>
+                </div>
+
+                {/* Podiums */}
+                <div className="bg-white rounded-lg p-4 border-2 border-blue-400 text-center">
+                  <p className="text-sm text-gray-600 font-semibold mb-1">
+                    🥇 Podios
+                  </p>
+                  <p className="text-3xl font-bold text-blue-600">
+                    {stats.podiums || 0}
+                  </p>
+                </div>
+
+                {/* Total Races */}
+                {stats.career_races && (
+                  <div className="bg-white rounded-lg p-4 border-2 border-gray-300 text-center">
+                    <p className="text-sm text-gray-600 font-semibold mb-1">
+                      🏎️ Carreras
+                    </p>
+                    <p className="text-3xl font-bold text-gray-700">
+                      {stats.career_races}
+                    </p>
+                  </div>
+                )}
+
+                {/* Fastest Laps */}
+                {stats.career_fastest_laps > 0 && (
+                  <div className="bg-white rounded-lg p-4 border-2 border-red-400 text-center">
+                    <p className="text-sm text-gray-600 font-semibold mb-1">
+                      ⏱️ V. Rápidas
+                    </p>
+                    <p className="text-3xl font-bold text-red-600">
+                      {stats.career_fastest_laps}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Biography Section */}
+          {(stats?.biography || driver.biography) && (
+            <div className="p-8 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                📖 Biografía
+              </h2>
+              <p className="text-gray-700 leading-relaxed">
+                {stats?.biography || driver.biography}
+              </p>
+            </div>
+          )}
+
+          {/* Interesting Facts Section */}
+          {(stats?.interesting_facts || driver.interesting_facts) && (
+            <div className="p-8 bg-gray-50 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                💡 Datos Curiosos
+              </h2>
+              <ul className="space-y-2">
+                {(stats?.interesting_facts || driver.interesting_facts).map((fact, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="text-red-600 text-xl">•</span>
+                    <span className="text-gray-700">{fact}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {/* Driver Details Grid */}
           <div className="p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Información del Piloto
+              ℹ️ Información del Piloto
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Driver Number */}
-              {driver.driver_number && (
+              {driver.driver_id && (
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <p className="text-sm text-gray-600 font-semibold mb-1">
                     Número
                   </p>
                   <p className="text-2xl font-bold text-gray-900">
-                    #{driver.driver_number}
+                    #{driver.driver_id}
                   </p>
                 </div>
               )}
