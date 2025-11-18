@@ -195,24 +195,68 @@ export const ChampionshipsPage = createListPage({
 // Cars Page
 export const CarsPage = createListPage({
   title: "Coches",
-  icon: "🚗",
+  icon: "🏎️",
   endpoint: "cars",
   idField: "car_id",
   onCardClick: (car, navigate) => {
-    navigate(`/cars/${car.car_id || car.car_number}`);
+    navigate(`/cars/${car.car_id}`);
   },
   renderCard: (car) => (
     <>
+      {/* Imagen del coche */}
+      <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden relative">
+        <img
+          src={car.image_url || ''}
+          alt={car.model_name || car.team_name}
+          className="w-full h-full object-contain p-2 car-image"
+          style={{ display: car.image_url ? 'block' : 'none' }}
+          onError={(e) => {
+            e.target.style.display = 'none';
+            const fallback = e.target.parentElement.querySelector('.fallback-icon');
+            if (fallback) fallback.style.display = 'flex';
+          }}
+        />
+        <div className="fallback-icon absolute inset-0 flex items-center justify-center" style={{display: car.image_url ? 'none' : 'flex'}}>
+          <span className="text-6xl opacity-20">🏎️</span>
+        </div>
+      </div>
+      
+      {/* Barra de color del equipo */}
       <div
-        className="w-full h-2 rounded-lg mb-4"
+        className="w-full h-2 rounded-lg mb-3"
         style={{ backgroundColor: car.team_colour || "#3B82F6" }}
       />
-      <h3 className="text-lg font-bold text-gray-800 mb-2">
-        {car.team_name || car.constructor_id}
+      
+      {/* Nombre del modelo */}
+      <h3 className="text-xl font-bold text-gray-800 mb-1">
+        {car.model_name || car.team_name}
       </h3>
-      <p className="text-sm text-gray-600">📅 Temporada: {car.year}</p>
-      {car.nationality && (
-        <p className="text-xs text-gray-500 mt-2">🌍 {car.nationality}</p>
+      
+      {/* Equipo */}
+      <p className="text-sm text-gray-700 font-semibold mb-2">
+        {car.team_name}
+      </p>
+      
+      {/* Año */}
+      <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+        <span>📅</span>
+        <span>Temporada {car.year}</span>
+      </div>
+      
+      {/* Motor */}
+      {car.engine && (
+        <div className="text-xs text-gray-500 mt-2 border-t border-gray-200 pt-2">
+          <span className="font-semibold">Motor:</span> {car.engine}
+        </div>
+      )}
+      
+      {/* Logros */}
+      {car.achievements && car.achievements.length > 0 && (
+        <div className="mt-2">
+          <span className="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
+            🏆 {car.achievements.length} logros
+          </span>
+        </div>
       )}
     </>
   ),

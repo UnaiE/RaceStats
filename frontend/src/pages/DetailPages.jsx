@@ -706,7 +706,7 @@ export function CarDetailPage() {
       <header className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
-            onClick={() => navigate("/cars")}
+            onClick={() => navigate(-1)}
             className="flex items-center text-gray-600 hover:text-gray-800"
           >
             <svg className="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -724,36 +724,45 @@ export function CarDetailPage() {
           <div 
             className="relative h-96 flex items-center justify-center overflow-hidden"
             style={{
-              background: `linear-gradient(135deg, ${car.team_colour || '#1f2937'}dd, ${car.team_colour || '#1f2937'})`
+              background: `linear-gradient(135deg, ${car.team_colour || '#1f2937'}, ${car.team_colour || '#1f2937'}dd)`
             }}
           >
-            <img
-              src={carImageUrl}
-              alt={`${car.team_name} Car`}
-              className="h-full object-contain drop-shadow-2xl"
-              onError={(e) => {
-                e.target.style.display = "none";
-              }}
-            />
+            {car.image_url && (
+              <img
+                src={car.image_url}
+                alt={car.model_name || car.team_name}
+                className="h-full object-contain drop-shadow-2xl"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                }}
+              />
+            )}
             <div className="absolute bottom-8 left-8 text-white">
               <h1 className="text-5xl font-bold drop-shadow-lg">
-                {car.team_name || "F1 Car"}
+                {car.model_name || car.team_name}
               </h1>
-              {car.car_number && (
-                <p className="text-3xl opacity-90 mt-2">
-                  #{car.car_number}
-                </p>
-              )}
+              <p className="text-2xl opacity-90 mt-2">
+                {car.team_name}
+              </p>
             </div>
           </div>
 
-          {/* Car Specifications */}
+          {/* Description */}
+          {car.description && (
+            <div className="p-8 bg-gray-50 border-b border-gray-200">
+              <p className="text-lg text-gray-700 leading-relaxed">
+                {car.description}
+              </p>
+            </div>
+          )}
+
+          {/* Technical Specifications */}
           <div className="p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Especificaciones Técnicas
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {car.team_name && (
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <p className="text-sm text-gray-600 font-semibold mb-1">Equipo</p>
@@ -763,11 +772,11 @@ export function CarDetailPage() {
                 </div>
               )}
 
-              {car.car_number && (
+              {car.year && (
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">Número de Coche</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    #{car.car_number}
+                  <p className="text-sm text-gray-600 font-semibold mb-1">Temporada</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {car.year}
                   </p>
                 </div>
               )}
@@ -776,64 +785,106 @@ export function CarDetailPage() {
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <p className="text-sm text-gray-600 font-semibold mb-1">Color del Equipo</p>
                   <div className="flex items-center gap-3">
-                    <div
-                      className="w-16 h-16 rounded-lg shadow-md border-2 border-white"
+                    <div 
+                      className="w-12 h-12 rounded-lg border-2 border-gray-300 shadow-sm"
                       style={{ backgroundColor: car.team_colour }}
-                    ></div>
-                    <p className="text-sm font-mono text-gray-700">
-                      {car.team_colour}
-                    </p>
+                    />
+                    <span className="font-mono text-sm text-gray-700">{car.team_colour}</span>
                   </div>
                 </div>
               )}
 
-              {car.driver_number && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">Número de Piloto</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    #{car.driver_number}
+              {car.chassis && (
+                <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
+                  <p className="text-sm text-blue-700 font-semibold mb-1">Chasis</p>
+                  <p className="text-lg font-bold text-blue-900">
+                    {car.chassis}
                   </p>
                 </div>
               )}
 
-              {car.session_key && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">Session Key</p>
-                  <p className="text-lg font-mono text-gray-900">
-                    {car.session_key}
+              {car.engine && (
+                <div className="bg-red-50 rounded-lg p-4 border-2 border-red-200">
+                  <p className="text-sm text-red-700 font-semibold mb-1">Motor</p>
+                  <p className="text-lg font-bold text-red-900">
+                    {car.engine}
                   </p>
                 </div>
               )}
 
-              {car.meeting_key && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">Meeting Key</p>
-                  <p className="text-lg font-mono text-gray-900">
-                    {car.meeting_key}
+              {car.power_unit && (
+                <div className="bg-orange-50 rounded-lg p-4 border-2 border-orange-200">
+                  <p className="text-sm text-orange-700 font-semibold mb-1">Unidad de Potencia</p>
+                  <p className="text-lg font-bold text-orange-900">
+                    {car.power_unit}
+                  </p>
+                </div>
+              )}
+
+              {car.gearbox && (
+                <div className="bg-purple-50 rounded-lg p-4 border-2 border-purple-200">
+                  <p className="text-sm text-purple-700 font-semibold mb-1">Caja de Cambios</p>
+                  <p className="text-lg font-bold text-purple-900">
+                    {car.gearbox}
+                  </p>
+                </div>
+              )}
+
+              {car.weight_kg && (
+                <div className="bg-green-50 rounded-lg p-4 border-2 border-green-200">
+                  <p className="text-sm text-green-700 font-semibold mb-1">Peso</p>
+                  <p className="text-2xl font-bold text-green-900">
+                    {car.weight_kg} <span className="text-lg">kg</span>
+                  </p>
+                </div>
+              )}
+
+              {car.fuel_capacity_kg && (
+                <div className="bg-yellow-50 rounded-lg p-4 border-2 border-yellow-200">
+                  <p className="text-sm text-yellow-700 font-semibold mb-1">Capacidad de Combustible</p>
+                  <p className="text-2xl font-bold text-yellow-900">
+                    {car.fuel_capacity_kg} <span className="text-lg">kg</span>
                   </p>
                 </div>
               )}
             </div>
 
-            {/* Car Image Gallery */}
-            {car.image_url && (
+            {/* Achievements */}
+            {car.achievements && car.achievements.length > 0 && (
               <div className="mt-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Galería
-                </h2>
-                <div className="bg-gray-50 rounded-lg p-8 border border-gray-200 flex justify-center">
-                  <img
-                    src={car.image_url}
-                    alt={`${car.team_name} Car`}
-                    className="h-64 object-contain"
-                    onError={(e) => {
-                      e.target.parentElement.innerHTML = '<p class="text-gray-500">Imagen no disponible</p>';
-                    }}
-                  />
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span>🏆</span>
+                  Logros y Éxitos
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {car.achievements.map((achievement, index) => (
+                    <div key={index} className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 p-4 rounded">
+                      <p className="text-gray-800 font-semibold">{achievement}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
           </div>
+
+          {/* Gallery */}
+          {car.image_url && (
+            <div className="p-8 bg-gray-50 border-t border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Galería</h3>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="bg-white rounded-lg p-4 border-2 border-gray-200">
+                  <img
+                    src={car.image_url}
+                    alt={`${car.model_name} - Vista principal`}
+                    className="w-full h-auto object-contain"
+                    onError={(e) => {
+                      e.target.parentElement.innerHTML = '<p class="text-gray-500 text-center py-8">Imagen no disponible</p>';
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>
