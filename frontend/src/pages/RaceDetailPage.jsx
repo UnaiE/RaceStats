@@ -30,19 +30,16 @@ export default function RaceDetailPage() {
       
       setRace(foundRace);
 
-      // Intentar obtener resultados desde Ergast API
-      // Prioridad 1: Si tiene year y round
-      if (foundRace.year && foundRace.round) {
-        console.log(`🔍 Buscando resultados: ${foundRace.year}/round/${foundRace.round}`);
-        await fetchRaceResults(foundRace.year, foundRace.round);
-      } 
-      // Prioridad 2: Si solo tiene year, intentar búsqueda por ubicación
-      else if (foundRace.year && foundRace.location) {
-        console.log(`🔍 Buscando resultados por ubicación: ${foundRace.year}/${foundRace.location}`);
-        await fetchRaceResultsByLocation(foundRace.year, foundRace.location);
-      }
-      else {
-        console.log("⚠️ No se puede buscar resultados: faltan year o round");
+      // Usar resultados de la base de datos si existen
+      if (foundRace.race_results && foundRace.race_results.length > 0) {
+        console.log(`✅ Resultados cargados desde BD: ${foundRace.race_results.length} pilotos`);
+        setStandings(foundRace.race_results);
+      } else {
+        // Intentar obtener desde Ergast como fallback
+        if (foundRace.year && foundRace.round) {
+          console.log(`🔍 Buscando resultados en Ergast: ${foundRace.year}/round/${foundRace.round}`);
+          await fetchRaceResults(foundRace.year, foundRace.round);
+        }
       }
       
     } catch (err) {
@@ -249,61 +246,82 @@ export default function RaceDetailPage() {
                         <th className="px-4 py-3 text-left text-sm font-semibold">Pos</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold">Piloto</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold">Equipo</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold">Tiempo</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold">Puntos</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold">Estado</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {standings.map((result, index) => (
-                        <tr
-                          key={index}
-                          className={`border-b border-gray-200 hover:bg-gray-50 ${
-                            index < 3 ? getPositionColor(result.position) : ""
-                          }`}
-                        >
-                          <td className="px-4 py-3">
-                            <div className={`font-bold text-lg ${
-                              parseInt(result.position) <= 3 ? "text-2xl" : ""
-                            }`}>
-                              {result.position}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="font-semibold text-gray-900">
-                              {result.Driver?.givenName} {result.Driver?.familyName}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              #{result.number} • {result.Driver?.code}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 text-gray-700">
-                            {result.Constructor?.name}
-                          </td>
-                          <td className="px-4 py-3 font-mono text-sm">
-                            {result.Time?.time || formatTime(result.Time)}
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                              {result.points}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-sm">
-                            <span className={`px-2 py-1 rounded ${
-                              result.status === "Finished" 
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-800"
-                            }`}>
-                              {result.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {standings.map((result, index) => {
+                        // Detectar si es resultado de OpenF1 (BD) o Ergast
+                        const isOpenF1Result = result.driver_name !== undefined;
+                        
+                        return (
+                          <tr
+                            key={index}
+                            className={`border-b border-gray-200 hover:bg-gray-50 ${
+                              index < 3 ? getPositionColor(result.position) : ""
+                            }`}
+                          >
+                            <td className="px-4 py-3">
+                              <div className={`font-bold text-lg ${
+                                parseInt(result.position) <= 3 ? "text-2xl" : ""
+                              }`}>
+                                {result.position}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-3">
+                                {isOpenF1Result && result.headshot_url && (
+                                  <img
+                                    src={result.headshot_url}
+                                    alt={result.driver_name}
+                                    className="w-10 h-10 rounded-full object-cover"
+                                    onError={(e) => e.target.style.display = 'none'}
+                                  />
+                                )}
+                                <div>
+                                  <div className="font-semibold text-gray-900">
+                                    {isOpenF1Result 
+                                      ? result.driver_name 
+                                      : `${result.Driver?.givenName} ${result.Driver?.familyName}`}
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    {isOpenF1Result 
+                                      ? `#${result.driver_number} • ${result.driver_acronym}`
+                                      : `#${result.number} • ${result.Driver?.code}`}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                {isOpenF1Result && result.team_colour && (
+                                  <div 
+                                    className="w-4 h-4 rounded-full"
+                                    style={{ backgroundColor: `#${result.team_colour}` }}
+                                  />
+                                )}
+                                <span className="text-gray-700">
+                                  {isOpenF1Result 
+                                    ? result.team_name 
+                                    : result.Constructor?.name}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              {result.points !== undefined && (
+                                <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                  {result.points}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
 
-                {/* Fastest Lap */}
+                {/* Fastest Lap - solo si viene de Ergast */}
                 {standings.find(r => r.FastestLap?.rank === "1") && (
                   <div className="mt-6 bg-purple-50 border border-purple-200 rounded-lg p-4">
                     <h3 className="font-bold text-purple-900 mb-2 flex items-center gap-2">
@@ -319,8 +337,12 @@ export default function RaceDetailPage() {
                           </span>
                           {" - "}
                           <span className="font-mono">{fastest.FastestLap?.Time?.time}</span>
-                          {" - "}
-                          <span>{fastest.FastestLap?.AverageSpeed?.speed} km/h</span>
+                          {fastest.FastestLap?.AverageSpeed?.speed && (
+                            <>
+                              {" - "}
+                              <span>{fastest.FastestLap.AverageSpeed.speed} km/h</span>
+                            </>
+                          )}
                         </p>
                       );
                     })()}
@@ -330,13 +352,124 @@ export default function RaceDetailPage() {
             )}
 
             {standings.length === 0 && (
-              <div className="mt-8 text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                <p className="text-gray-500 text-lg">
-                  📊 No hay resultados disponibles para esta carrera
-                </p>
-                <p className="text-gray-400 text-sm mt-2">
-                  Los resultados se obtienen automáticamente de Ergast API
-                </p>
+              <div className="mt-8">
+                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                  <p className="text-gray-500 text-lg mb-2">
+                    📊 No hay resultados disponibles para esta carrera
+                  </p>
+                  <p className="text-gray-400 text-sm">
+                    {race.year >= 2025 
+                      ? "Esta carrera aún no se ha disputado" 
+                      : "Los resultados no están disponibles en Ergast API"}
+                  </p>
+                </div>
+
+                {/* Información adicional cuando no hay resultados */}
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Información del circuito */}
+                  <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                      <span>🏁</span>
+                      Información del Circuito
+                    </h3>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm text-gray-600">Nombre del Circuito</p>
+                        <p className="text-lg font-semibold text-gray-900">
+                          {race.circuit_short_name || "N/A"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Ubicación</p>
+                        <p className="text-lg font-semibold text-gray-900">
+                          {race.location}, {race.country_name}
+                        </p>
+                      </div>
+                      {race.country_code && (
+                        <div className="flex items-center gap-2 pt-2">
+                          <img
+                            src={`https://flagcdn.com/w80/${race.country_code.toLowerCase()}.png`}
+                            alt={race.country_code}
+                            className="h-10 rounded shadow"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Detalles de la sesión */}
+                  <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                      <span>📋</span>
+                      Detalles de la Sesión
+                    </h3>
+                    <div className="space-y-3">
+                      {race.session_type && (
+                        <div>
+                          <p className="text-sm text-gray-600">Tipo de Sesión</p>
+                          <p className="text-lg font-semibold text-gray-900">{race.session_type}</p>
+                        </div>
+                      )}
+                      {race.date_start && (
+                        <div>
+                          <p className="text-sm text-gray-600">Fecha y Hora</p>
+                          <p className="text-lg font-semibold text-gray-900">
+                            {new Date(race.date_start).toLocaleString("es-ES", {
+                              weekday: "long",
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
+                      )}
+                      {race.gmt_offset && (
+                        <div>
+                          <p className="text-sm text-gray-600">Zona Horaria</p>
+                          <p className="text-lg font-semibold text-gray-900">GMT {race.gmt_offset}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Estadísticas adicionales si están disponibles */}
+                {(race.total_laps || race.race_distance) && (
+                  <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+                    <h3 className="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+                      <span>📊</span>
+                      Estadísticas de la Carrera
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {race.total_laps && (
+                        <div className="text-center">
+                          <p className="text-sm text-blue-700">Vueltas Totales</p>
+                          <p className="text-2xl font-bold text-blue-900">{race.total_laps}</p>
+                        </div>
+                      )}
+                      {race.race_distance && (
+                        <div className="text-center">
+                          <p className="text-sm text-blue-700">Distancia</p>
+                          <p className="text-2xl font-bold text-blue-900">{race.race_distance}</p>
+                        </div>
+                      )}
+                      {race.safety_car_deployments !== undefined && (
+                        <div className="text-center">
+                          <p className="text-sm text-blue-700">Safety Cars</p>
+                          <p className="text-2xl font-bold text-blue-900">{race.safety_car_deployments}</p>
+                        </div>
+                      )}
+                      {race.virtual_safety_car !== undefined && (
+                        <div className="text-center">
+                          <p className="text-sm text-blue-700">VSC</p>
+                          <p className="text-2xl font-bold text-blue-900">{race.virtual_safety_car}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

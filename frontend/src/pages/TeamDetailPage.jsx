@@ -130,9 +130,18 @@ export default function TeamDetailPage() {
               <h1 className="text-5xl font-bold mb-2 drop-shadow-lg">
                 {team.name || team.team_name}
               </h1>
-              <p className="text-2xl opacity-90">
-                {team.country || team.nationality || ""}
-              </p>
+              <div className="flex items-center justify-center gap-3">
+                {team.country_code && (
+                  <img
+                    src={`https://flagcdn.com/w80/${team.country_code.toLowerCase()}.png`}
+                    alt={`${team.country_code} flag`}
+                    className="h-8 rounded shadow-lg"
+                  />
+                )}
+                <p className="text-2xl opacity-90">
+                  {team.country_code ? team.country_code.toUpperCase() : (team.country || team.nationality || "")}
+                </p>
+              </div>
             </div>
             
             {/* Decorative stripe */}
@@ -144,124 +153,135 @@ export default function TeamDetailPage() {
 
           {/* Team Details Grid */}
           <div className="p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Información del Equipo
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {/* Team Name */}
-              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                <p className="text-sm text-gray-600 font-semibold mb-1">
-                  Nombre del Equipo
-                </p>
-                <p className="text-xl font-bold text-gray-900">
-                  {team.name || team.team_name}
-                </p>
-              </div>
-
-              {/* Country */}
-              {(team.country || team.nationality) && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">
-                    País
-                  </p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {team.country || team.nationality}
-                  </p>
+            {/* Championships Stats */}
+            {(team.constructors_championships || team.drivers_championships || team.founded_year) && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg p-6 text-white shadow-lg">
+                  <p className="text-sm opacity-90 mb-1">🏆 Campeonatos de Constructores</p>
+                  <p className="text-4xl font-bold">{team.constructors_championships || 0}</p>
                 </div>
-              )}
-
-              {/* Team Colour */}
-              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                <p className="text-sm text-gray-600 font-semibold mb-1">
-                  Color del Equipo
-                </p>
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-16 h-16 rounded-lg shadow-md border-2 border-white"
-                    style={{ backgroundColor: teamColor }}
-                  ></div>
-                  <p className="text-sm font-mono text-gray-700">
-                    {teamColor}
-                  </p>
+                <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg p-6 text-white shadow-lg">
+                  <p className="text-sm opacity-90 mb-1">👤 Campeonatos de Pilotos</p>
+                  <p className="text-4xl font-bold">{team.drivers_championships || 0}</p>
+                </div>
+                <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-lg p-6 text-white shadow-lg">
+                  <p className="text-sm opacity-90 mb-1">📅 Año de Fundación</p>
+                  <p className="text-4xl font-bold">{team.founded_year || "N/A"}</p>
                 </div>
               </div>
+            )}
 
-              {/* Session Key */}
-              {team.session_key && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">
-                    Session Key
-                  </p>
-                  <p className="text-lg font-mono text-gray-900">
-                    {team.session_key}
-                  </p>
-                </div>
-              )}
-
-              {/* Meeting Key */}
-              {team.meeting_key && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">
-                    Meeting Key
-                  </p>
-                  <p className="text-lg font-mono text-gray-900">
-                    {team.meeting_key}
-                  </p>
-                </div>
-              )}
-
-              {/* Team ID */}
-              {team.team_id && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">
-                    Team ID
-                  </p>
-                  <p className="text-lg font-mono text-gray-900">
-                    {team.team_id}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Drivers Section */}
-            {drivers.length > 0 && (
-              <div className="mt-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Pilotos del Equipo ({drivers.length})
+            {/* History Section */}
+            {team.history && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  📖 Historia del Equipo
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                  <p className="text-gray-700 leading-relaxed text-justify">
+                    {team.history}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Sponsors Section */}
+            {team.sponsors && team.sponsors.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  💼 Patrocinadores Principales
+                </h2>
+                <div className="flex flex-wrap gap-3">
+                  {team.sponsors.map((sponsor, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg px-4 py-2 border-2 border-gray-200 shadow-sm font-semibold text-gray-700"
+                    >
+                      {sponsor}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Legendary Drivers Section */}
+            {team.legendary_drivers && team.legendary_drivers.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  ⭐ Pilotos Legendarios
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {team.legendary_drivers.map((driver, index) => (
+                    <div
+                      key={index}
+                      className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200 shadow-sm"
+                    >
+                      <p className="font-bold text-gray-900 text-lg">{driver}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Current Drivers Section */}
+            {drivers.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  🏎️ Pilotos Actuales ({drivers.length})
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {drivers.map((driver) => (
                     <div
                       key={driver.driver_id || driver.driver_number}
-                      onClick={() => navigate(`/drivers/${driver.driver_number || driver.driver_id}`)}
-                      className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-lg transition-all cursor-pointer transform hover:scale-105"
+                      onClick={() => navigate(`/drivers/${driver.driver_id || driver.driver_number}`)}
+                      className="bg-white rounded-lg p-6 border-2 hover:shadow-xl transition-all cursor-pointer transform hover:scale-105"
+                      style={{ borderColor: teamColor }}
                     >
                       <div className="flex items-center gap-4">
-                        <div
-                          className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-lg shadow-md"
-                          style={{ backgroundColor: teamColor }}
-                        >
-                          {driver.driver_number || "?"}
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-bold text-gray-900">
-                            {driver.full_name || driver.name_acronym}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {driver.name_acronym}
-                          </p>
-                        </div>
-                        {driver.headshot_url && (
+                        {driver.headshot_url ? (
                           <img
                             src={driver.headshot_url}
                             alt={driver.full_name}
-                            className="w-16 h-16 object-cover rounded-lg"
+                            className="w-20 h-20 object-cover rounded-full border-4"
+                            style={{ borderColor: teamColor }}
                             onError={(e) => {
-                              e.target.style.display = "none";
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
                             }}
                           />
-                        )}
+                        ) : null}
+                        <div
+                          className={`w-20 h-20 rounded-full flex items-center justify-center font-bold text-white text-2xl shadow-md ${driver.headshot_url ? 'hidden' : ''}`}
+                          style={{ backgroundColor: teamColor }}
+                        >
+                          {driver.driver_id || driver.driver_number || "?"}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-bold text-gray-900 text-xl">
+                            {driver.full_name || driver.name_acronym}
+                          </p>
+                          <p className="text-sm text-gray-600 font-semibold">
+                            {driver.name_acronym}
+                          </p>
+                          {driver.country_code && (
+                            <div className="flex items-center gap-2 mt-2">
+                              <img
+                                src={`https://flagcdn.com/w40/${driver.country_code.toLowerCase()}.png`}
+                                alt={driver.country_code}
+                                className="h-4 rounded shadow"
+                              />
+                              <span className="text-xs text-gray-500">
+                                {driver.country_code.toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div
+                          className="w-16 h-16 rounded-full flex items-center justify-center font-bold text-white text-xl shadow-lg"
+                          style={{ backgroundColor: teamColor }}
+                        >
+                          #{driver.driver_id || driver.driver_number || "?"}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -271,9 +291,9 @@ export default function TeamDetailPage() {
 
             {/* Logo Gallery */}
             {team.logo && (
-              <div className="mt-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Logo del Equipo
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  🎨 Logo del Equipo
                 </h2>
                 <div className="bg-gray-50 rounded-lg p-8 border border-gray-200 flex justify-center">
                   <img

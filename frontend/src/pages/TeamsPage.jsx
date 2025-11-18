@@ -53,33 +53,67 @@ export default function TeamsPage() {
             <div
               key={team.team_id || team.team_name}
               onClick={() => navigate(`/teams/${team.team_id || encodeURIComponent(team.team_name || team.name)}`)}
-              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 cursor-pointer transform hover:scale-105"
+              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105"
             >
+              {/* Color bar */}
               <div
-                className="w-full h-3 rounded-t-lg mb-4"
+                className="w-full h-3"
                 style={{ backgroundColor: team.colour || team.team_colour || "#3B82F6" }}
               />
               
-              {/* Logo del equipo */}
-              {team.logo && (
-                <div className="flex justify-center mb-4">
-                  <img
-                    src={team.logo}
-                    alt={`${team.name || team.team_name} logo`}
-                    className="h-16 object-contain"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
-                  />
+              <div className="p-6">
+                {/* Logo del equipo */}
+                {team.logo && (
+                  <div className="flex justify-center mb-4">
+                    <img
+                      src={team.logo}
+                      alt={`${team.name || team.team_name} logo`}
+                      className="h-16 object-contain"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
+                  </div>
+                )}
+                
+                {/* Nombre del equipo */}
+                <h3 className="text-xl font-bold text-gray-800 mb-3 text-center">
+                  {team.name || team.team_name}
+                </h3>
+                
+                {/* País con bandera */}
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  {team.country_code && (
+                    <img
+                      src={`https://flagcdn.com/w40/${team.country_code.toLowerCase()}.png`}
+                      alt={`${team.country_code} flag`}
+                      className="w-8 h-5 rounded shadow"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
+                  )}
+                  <p className="text-gray-600 text-sm">
+                    {team.country_code ? team.country_code.toUpperCase() : ""}
+                  </p>
                 </div>
-              )}
-              
-              <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">
-                {team.name || team.team_name}
-              </h3>
-              <p className="text-gray-600 text-sm text-center">
-                {team.country || team.nationality || "País no especificado"}
-              </p>
+                
+                {/* Estadísticas */}
+                <div className="border-t pt-3 mt-3 grid grid-cols-2 gap-2 text-center">
+                  <div>
+                    <p className="text-xs text-gray-500">Fundado</p>
+                    <p className="font-bold text-gray-800">
+                      {team.founded_year || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Campeonatos</p>
+                    <p className="font-bold text-gray-800">
+                      {(team.constructors_championships || 0) + (team.drivers_championships || 0)}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
