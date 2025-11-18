@@ -80,8 +80,8 @@ export function CircuitDetailPage() {
     );
   }
 
-  // URL de imagen del circuito (ejemplo genérico, puedes personalizarlo)
-  const circuitImageUrl = `https://media.formula1.com/image/upload/f_auto/q_auto/v1677244985/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/${circuit.circuit_short_name?.toLowerCase().replace(/ /g, '_')}_circuit.png`;
+  // URL de imagen del circuito desde la base de datos o fallback
+  const circuitImageUrl = circuit.layout_image || `https://media.formula1.com/image/upload/f_auto/q_auto/v1677244985/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/${circuit.circuit_short_name?.toLowerCase().replace(/ /g, '_')}_circuit.png`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -103,68 +103,142 @@ export function CircuitDetailPage() {
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Hero Section with Circuit Image */}
-          <div className="relative h-96 bg-gradient-to-r from-gray-800 to-gray-900 overflow-hidden">
-            <img
-              src={circuitImageUrl}
-              alt={circuit.circuit_short_name}
-              className="w-full h-full object-cover opacity-40"
-              onError={(e) => {
-                e.target.style.display = "none";
-              }}
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white z-10">
-                <h1 className="text-5xl font-bold mb-2 drop-shadow-lg">
-                  {circuit.circuit_short_name}
+          {/* Hero Section */}
+          <div className="relative bg-gradient-to-r from-red-600 to-red-700 p-8 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold mb-2">
+                  {circuit.name || circuit.circuit_short_name}
                 </h1>
-                <p className="text-2xl opacity-90">
-                  {circuit.location || circuit.country_name}
-                </p>
+                <div className="flex items-center gap-3 text-lg">
+                  {circuit.country_code && (
+                    <img
+                      src={`https://flagcdn.com/w40/${circuit.country_code.toLowerCase()}.png`}
+                      alt={circuit.country}
+                      className="w-8 h-6 rounded shadow-md"
+                    />
+                  )}
+                  <span>{circuit.location}</span>
+                  <span>•</span>
+                  <span>{circuit.country}</span>
+                </div>
               </div>
+              {circuit.first_gp_year && (
+                <div className="text-right">
+                  <p className="text-sm opacity-90">Primer GP</p>
+                  <p className="text-3xl font-bold">{circuit.first_gp_year}</p>
+                </div>
+              )}
             </div>
-            <div className="absolute bottom-0 left-0 right-0 h-2 bg-red-600" />
           </div>
 
-          {/* Circuit Details Grid */}
+          {/* Layout Image */}
+          {circuit.layout_image && (
+            <div className="relative h-96 bg-gray-900 overflow-hidden">
+              <img
+                src={circuit.layout_image}
+                alt={`Trazado de ${circuit.name}`}
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                }}
+              />
+            </div>
+          )}
+
+          {/* Technical Specs Grid */}
           <div className="p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Información del Circuito
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <span>📊</span>
+              Características Técnicas
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {circuit.circuit_short_name && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">Nombre</p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {circuit.circuit_short_name}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              {circuit.length_km && (
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border-2 border-blue-200">
+                  <p className="text-sm text-blue-700 font-semibold mb-1">Longitud</p>
+                  <p className="text-3xl font-bold text-blue-900">
+                    {circuit.length_km} <span className="text-xl">km</span>
                   </p>
                 </div>
               )}
 
-              {circuit.location && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">Ubicación</p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {circuit.location}
+              {circuit.turns && (
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 border-2 border-green-200">
+                  <p className="text-sm text-green-700 font-semibold mb-1">Curvas</p>
+                  <p className="text-3xl font-bold text-green-900">
+                    {circuit.turns}
                   </p>
                 </div>
               )}
 
-              {circuit.country_name && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">País</p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {circuit.country_name}
+              {circuit.drs_zones && (
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 border-2 border-purple-200">
+                  <p className="text-sm text-purple-700 font-semibold mb-1">Zonas DRS</p>
+                  <p className="text-3xl font-bold text-purple-900">
+                    {circuit.drs_zones}
+                  </p>
+                </div>
+              )}
+
+              {circuit.circuit_type && (
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-6 border-2 border-orange-200">
+                  <p className="text-sm text-orange-700 font-semibold mb-1">Tipo</p>
+                  <p className="text-lg font-bold text-orange-900">
+                    {circuit.circuit_type}
                   </p>
                 </div>
               )}
             </div>
+
+            {/* Lap Record */}
+            {circuit.lap_record && (
+              <div className="mb-8 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-lg p-6">
+                <h3 className="text-xl font-bold text-red-900 mb-2 flex items-center gap-2">
+                  <span>⚡</span>
+                  Récord de Vuelta
+                </h3>
+                <p className="text-2xl font-mono font-bold text-red-800">
+                  {circuit.lap_record}
+                </p>
+              </div>
+            )}
+
+            {/* Additional Info */}
+            {circuit.direction && (
+              <div className="mb-8 bg-gray-50 border border-gray-200 rounded-lg p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <span>🔄</span>
+                  Dirección del Circuito
+                </h3>
+                <p className="text-lg text-gray-700">
+                  {circuit.direction}
+                </p>
+              </div>
+            )}
+
+            {/* Interesting Facts */}
+            {circuit.interesting_facts && circuit.interesting_facts.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span>💡</span>
+                  Datos Interesantes
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {circuit.interesting_facts.map((fact, index) => (
+                    <div key={index} className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                      <p className="text-gray-800">{fact}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Races at this Circuit */}
             {races.length > 0 && (
               <div className="mt-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span>🏁</span>
                   Carreras en este Circuito ({races.length})
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

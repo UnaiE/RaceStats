@@ -88,33 +88,35 @@ export const CircuitsPage = createListPage({
     <>
       {/* Imagen del circuito */}
       <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
-        <img
-          src={`https://media.formula1.com/image/upload/f_auto/q_auto/v1677244985/content/dam/fom-website/2018-redesign-assets/Circuit%20maps%2016x9/${circuit.circuit_short_name?.toLowerCase().replace(/ /g, '_')}_circuit.png`}
-          alt={circuit.circuit_short_name}
-          className="w-full h-full object-cover opacity-70"
-          onError={(e) => {
-            e.target.parentElement.innerHTML = '<span class="text-6xl opacity-20">🏁</span>';
-          }}
-        />
+        {circuit.layout_image ? (
+          <img
+            src={circuit.layout_image}
+            alt={circuit.name || circuit.circuit_short_name}
+            className="w-full h-full object-contain p-2"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.parentElement.innerHTML = '<span class="text-6xl opacity-20">🏁</span>';
+            }}
+          />
+        ) : (
+          <span className="text-6xl opacity-20">🏁</span>
+        )}
       </div>
       <h3 className="text-lg font-bold text-gray-800 mb-2">
-        {circuit.circuit_short_name || circuit.circuit_name || "Circuito"}
+        {circuit.name || circuit.circuit_short_name || "Circuito"}
       </h3>
       <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
         <span>📍</span>
-        <span>{circuit.location || circuit.country_name}</span>
+        <span>{circuit.location || circuit.country}</span>
       </div>
       {circuit.country_code && (
         <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
           <img
-            src={`https://flagcdn.com/w20/${circuit.country_code?.toLowerCase()}.png`}
-            alt={circuit.country_code}
+            src={`https://flagcdn.com/w20/${circuit.country_code.toLowerCase()}.png`}
+            alt={circuit.country}
             className="h-3 w-auto rounded shadow-sm"
-            onError={(e) => {
-              e.target.style.display = "none";
-            }}
           />
-          <span>{circuit.country_name || circuit.country_code}</span>
+          <span>{circuit.country}</span>
         </div>
       )}
     </>
