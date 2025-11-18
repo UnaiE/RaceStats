@@ -89,7 +89,7 @@ export function CircuitDetailPage() {
       <header className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
-            onClick={() => navigate("/circuits")}
+            onClick={() => navigate(-1)}
             className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
           >
             <svg className="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -272,6 +272,7 @@ export function CircuitDetailPage() {
 // ============================================
 export function SeasonDetailPage() {
   const [season, setSeason] = useState(null);
+  const [races, setRaces] = useState([]);
   const [standings, setStandings] = useState([]);
   const [constructorStandings, setConstructorStandings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -298,6 +299,16 @@ export function SeasonDetailPage() {
       }
       
       setSeason(foundSeason);
+
+      // Obtener carreras de la temporada
+      const racesResponse = await fetch("http://localhost:8000/races/");
+      if (racesResponse.ok) {
+        const racesData = await racesResponse.json();
+        const seasonRaces = racesData.filter(r => String(r.year) === String(seasonId));
+        // Ordenar por fecha
+        seasonRaces.sort((a, b) => new Date(a.date_start) - new Date(b.date_start));
+        setRaces(seasonRaces);
+      }
 
       // Obtener standings desde Ergast
       await fetchSeasonStandings(foundSeason.year);
@@ -370,7 +381,7 @@ export function SeasonDetailPage() {
       <header className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
-            onClick={() => navigate("/seasons")}
+            onClick={() => navigate(-1)}
             className="flex items-center text-gray-600 hover:text-gray-800"
           >
             <svg className="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -502,6 +513,82 @@ export function SeasonDetailPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* Races of the Season */}
+        {races.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <span>🏁</span>
+              Carreras de la Temporada ({races.length})
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {races.map((race, index) => (
+                <div
+                  key={race.session_key || index}
+                  onClick={() => navigate(`/races/${race.session_key}`)}
+                  className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border-2 border-gray-200 hover:border-red-500 hover:shadow-lg transition-all cursor-pointer"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <div className="text-sm text-gray-600 font-semibold mb-1">
+                        Ronda {index + 1}
+                      </div>
+                      <h3 className="font-bold text-gray-900 text-lg mb-1">
+                        {race.meeting_name || race.location}
+                      </h3>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        {race.country_code && (
+                          <img
+                            src={`https://flagcdn.com/w20/${race.country_code.toLowerCase()}.png`}
+                            alt={race.country_name}
+                            className="h-3 w-auto rounded shadow-sm"
+                          />
+                        )}
+                        <span>{race.circuit_short_name}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {race.date_start && (
+                    <div className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                      <span>📅</span>
+                      <span>
+                        {new Date(race.date_start).toLocaleDateString("es-ES", {
+                          day: "numeric",
+                          month: "long"
+                        })}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {race.race_results && race.race_results.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-300">
+                      <div className="text-xs text-gray-600 mb-1">Ganador:</div>
+                      <div className="flex items-center gap-2">
+                        {race.race_results[0].headshot_url && (
+                          <img
+                            src={race.race_results[0].headshot_url}
+                            alt={race.race_results[0].driver_name}
+                            className="w-8 h-8 rounded-full object-cover border-2 border-yellow-500"
+                          />
+                        )}
+                        <div className="flex-1">
+                          <div className="font-bold text-sm text-gray-900">
+                            {race.race_results[0].driver_name}
+                          </div>
+                          <div className="text-xs text-gray-600">
+                            {race.race_results[0].team_name}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}

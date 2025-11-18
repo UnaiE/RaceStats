@@ -143,7 +143,7 @@ export default function RaceDetailPage() {
       <header className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
-            onClick={() => navigate("/races")}
+            onClick={() => navigate(-1)}
             className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
           >
             <svg
