@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import TeamNews from "../components/TeamNews";
+import ImageGallery from "../components/ImageGallery";
 
 export default function TeamDetailPage() {
   const [team, setTeam] = useState(null);
   const [drivers, setDrivers] = useState([]);
+  const [enrichedData, setEnrichedData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -32,6 +35,9 @@ export default function TeamDetailPage() {
       }
       
       setTeam(foundTeam);
+      
+      console.log('Team data:', foundTeam); // Debug
+      console.log('Team news:', foundTeam.news); // Debug
 
       // Obtener pilotos del equipo
       const driversResponse = await fetch("http://localhost:8000/drivers/");
@@ -41,6 +47,14 @@ export default function TeamDetailPage() {
           (d) => d.team_name === (foundTeam.team_name || foundTeam.name)
         );
         setDrivers(teamDrivers);
+      }
+
+      // Obtener datos enriquecidos del equipo
+      if (foundTeam.achievements || foundTeam.images_gallery) {
+        setEnrichedData({
+          achievements: foundTeam.achievements || [],
+          images: foundTeam.images_gallery || []
+        });
       }
       
     } catch (err) {
@@ -306,6 +320,35 @@ export default function TeamDetailPage() {
                   />
                 </div>
               </div>
+            )}
+
+            {/* Team News */}
+            {team.news && team.news.length > 0 && (
+              <div className="mt-8">
+                <TeamNews news={team.news} />
+              </div>
+            )}
+
+            {/* Team Achievements */}
+            {team.achievements && team.achievements.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span>🏆</span>
+                  Logros y Campeonatos
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {team.achievements.map((achievement, index) => (
+                    <div key={index} className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 p-4 rounded">
+                      <p className="text-gray-800">{achievement}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Image Gallery */}
+            {team.images_gallery && team.images_gallery.length > 0 && (
+              <ImageGallery images={team.images_gallery} title="Galería del Equipo" />
             )}
           </div>
         </div>

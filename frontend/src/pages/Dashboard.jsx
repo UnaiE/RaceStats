@@ -2,6 +2,7 @@ import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import RaceCountdown from "../components/RaceCountdown";
+import F1News from "../components/F1News";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -160,8 +161,8 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Stats quick view (opcional) */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Stats quick view */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -189,6 +190,11 @@ export default function Dashboard() {
               <div className="text-4xl">🏁</div>
             </div>
           </div>
+        </div>
+
+        {/* F1 News Section */}
+        <div className="mt-12">
+          <F1News limit={10} />
         </div>
       </main>
     </div>

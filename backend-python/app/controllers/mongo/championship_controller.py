@@ -7,7 +7,21 @@ def get_all_championships():
     return get_all(collection)
 
 def get_championship(championship_id: str):
+    # Intentar buscar por championship_id primero
     championship = get_one_by_field(collection, "championship_id", championship_id)
+    
+    # Si no se encuentra, intentar por year
+    if not championship:
+        try:
+            year = int(championship_id)
+            championship = get_one_by_field(collection, "year", year)
+        except ValueError:
+            pass
+    
+    # Si aún no se encuentra, intentar por _id
+    if not championship:
+        championship = get_one(collection, championship_id)
+    
     if not championship:
         raise HTTPException(status_code=404, detail="Championship not found")
     return championship

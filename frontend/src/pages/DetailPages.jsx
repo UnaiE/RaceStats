@@ -758,13 +758,23 @@ export function CarDetailPage() {
 
           {/* Technical Specifications */}
           <div className="p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <span>⚙️</span>
               Especificaciones Técnicas
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {car.model_name && (
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border-2 border-gray-300 shadow-sm">
+                  <p className="text-sm text-gray-600 font-semibold mb-1">Modelo</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {car.model_name}
+                  </p>
+                </div>
+              )}
+
               {car.team_name && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border-2 border-gray-300 shadow-sm">
                   <p className="text-sm text-gray-600 font-semibold mb-1">Equipo</p>
                   <p className="text-xl font-bold text-gray-900">
                     {car.team_name}
@@ -773,7 +783,7 @@ export function CarDetailPage() {
               )}
 
               {car.year && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border-2 border-gray-300 shadow-sm">
                   <p className="text-sm text-gray-600 font-semibold mb-1">Temporada</p>
                   <p className="text-xl font-bold text-gray-900">
                     {car.year}
@@ -781,22 +791,9 @@ export function CarDetailPage() {
                 </div>
               )}
 
-              {car.team_colour && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-sm text-gray-600 font-semibold mb-1">Color del Equipo</p>
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-12 h-12 rounded-lg border-2 border-gray-300 shadow-sm"
-                      style={{ backgroundColor: car.team_colour }}
-                    />
-                    <span className="font-mono text-sm text-gray-700">{car.team_colour}</span>
-                  </div>
-                </div>
-              )}
-
               {car.chassis && (
-                <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
-                  <p className="text-sm text-blue-700 font-semibold mb-1">Chasis</p>
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border-2 border-blue-300 shadow-sm">
+                  <p className="text-sm text-blue-700 font-semibold mb-1">🏗️ Chasis</p>
                   <p className="text-lg font-bold text-blue-900">
                     {car.chassis}
                   </p>
@@ -804,8 +801,8 @@ export function CarDetailPage() {
               )}
 
               {car.engine && (
-                <div className="bg-red-50 rounded-lg p-4 border-2 border-red-200">
-                  <p className="text-sm text-red-700 font-semibold mb-1">Motor</p>
+                <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-4 border-2 border-red-300 shadow-sm">
+                  <p className="text-sm text-red-700 font-semibold mb-1">🔧 Motor</p>
                   <p className="text-lg font-bold text-red-900">
                     {car.engine}
                   </p>
@@ -813,26 +810,44 @@ export function CarDetailPage() {
               )}
 
               {car.power_unit && (
-                <div className="bg-orange-50 rounded-lg p-4 border-2 border-orange-200">
-                  <p className="text-sm text-orange-700 font-semibold mb-1">Unidad de Potencia</p>
+                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border-2 border-orange-300 shadow-sm">
+                  <p className="text-sm text-orange-700 font-semibold mb-1">⚡ Unidad de Potencia</p>
                   <p className="text-lg font-bold text-orange-900">
                     {car.power_unit}
                   </p>
                 </div>
               )}
 
-              {car.gearbox && (
-                <div className="bg-purple-50 rounded-lg p-4 border-2 border-purple-200">
-                  <p className="text-sm text-purple-700 font-semibold mb-1">Caja de Cambios</p>
+              {car.power_output && (
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border-2 border-purple-300 shadow-sm">
+                  <p className="text-sm text-purple-700 font-semibold mb-1">💪 Potencia</p>
                   <p className="text-lg font-bold text-purple-900">
+                    {car.power_output}
+                  </p>
+                </div>
+              )}
+
+              {car.max_rpm && (
+                <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-lg p-4 border-2 border-pink-300 shadow-sm">
+                  <p className="text-sm text-pink-700 font-semibold mb-1">🔄 RPM Máximas</p>
+                  <p className="text-lg font-bold text-pink-900">
+                    {car.max_rpm}
+                  </p>
+                </div>
+              )}
+
+              {car.gearbox && (
+                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-4 border-2 border-indigo-300 shadow-sm">
+                  <p className="text-sm text-indigo-700 font-semibold mb-1">⚙️ Caja de Cambios</p>
+                  <p className="text-lg font-bold text-indigo-900">
                     {car.gearbox}
                   </p>
                 </div>
               )}
 
               {car.weight_kg && (
-                <div className="bg-green-50 rounded-lg p-4 border-2 border-green-200">
-                  <p className="text-sm text-green-700 font-semibold mb-1">Peso</p>
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border-2 border-green-300 shadow-sm">
+                  <p className="text-sm text-green-700 font-semibold mb-1">⚖️ Peso Mínimo</p>
                   <p className="text-2xl font-bold text-green-900">
                     {car.weight_kg} <span className="text-lg">kg</span>
                   </p>
@@ -840,11 +855,78 @@ export function CarDetailPage() {
               )}
 
               {car.fuel_capacity_kg && (
-                <div className="bg-yellow-50 rounded-lg p-4 border-2 border-yellow-200">
-                  <p className="text-sm text-yellow-700 font-semibold mb-1">Capacidad de Combustible</p>
+                <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-4 border-2 border-yellow-300 shadow-sm">
+                  <p className="text-sm text-yellow-700 font-semibold mb-1">⛽ Capacidad de Combustible</p>
                   <p className="text-2xl font-bold text-yellow-900">
                     {car.fuel_capacity_kg} <span className="text-lg">kg</span>
                   </p>
+                </div>
+              )}
+
+              {car.fuel && (
+                <div className="bg-gradient-to-br from-lime-50 to-lime-100 rounded-lg p-4 border-2 border-lime-300 shadow-sm">
+                  <p className="text-sm text-lime-700 font-semibold mb-1">🌿 Combustible</p>
+                  <p className="text-lg font-bold text-lime-900">
+                    {car.fuel}
+                  </p>
+                </div>
+              )}
+
+              {car.tyres && (
+                <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 border-2 border-slate-300 shadow-sm">
+                  <p className="text-sm text-slate-700 font-semibold mb-1">🛞 Neumáticos</p>
+                  <p className="text-lg font-bold text-slate-900">
+                    {car.tyres}
+                  </p>
+                </div>
+              )}
+
+              {car.wheels && (
+                <div className="bg-gradient-to-br from-zinc-50 to-zinc-100 rounded-lg p-4 border-2 border-zinc-300 shadow-sm">
+                  <p className="text-sm text-zinc-700 font-semibold mb-1">⭕ Llantas</p>
+                  <p className="text-lg font-bold text-zinc-900">
+                    {car.wheels}
+                  </p>
+                </div>
+              )}
+
+              {car.brakes && (
+                <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-lg p-4 border-2 border-rose-300 shadow-sm">
+                  <p className="text-sm text-rose-700 font-semibold mb-1">🛑 Frenos</p>
+                  <p className="text-lg font-bold text-rose-900">
+                    {car.brakes}
+                  </p>
+                </div>
+              )}
+
+              {car.suspension_front && (
+                <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-lg p-4 border-2 border-cyan-300 shadow-sm">
+                  <p className="text-sm text-cyan-700 font-semibold mb-1">🔩 Suspensión Delantera</p>
+                  <p className="text-sm font-bold text-cyan-900">
+                    {car.suspension_front}
+                  </p>
+                </div>
+              )}
+
+              {car.suspension_rear && (
+                <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-lg p-4 border-2 border-teal-300 shadow-sm">
+                  <p className="text-sm text-teal-700 font-semibold mb-1">🔩 Suspensión Trasera</p>
+                  <p className="text-sm font-bold text-teal-900">
+                    {car.suspension_rear}
+                  </p>
+                </div>
+              )}
+
+              {car.team_colour && (
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border-2 border-gray-300 shadow-sm">
+                  <p className="text-sm text-gray-600 font-semibold mb-1">🎨 Color del Equipo</p>
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-12 h-12 rounded-lg border-2 border-gray-400 shadow-md"
+                      style={{ backgroundColor: car.team_colour }}
+                    />
+                    <span className="font-mono text-sm text-gray-700 font-bold">{car.team_colour}</span>
+                  </div>
                 </div>
               )}
             </div>
@@ -858,7 +940,7 @@ export function CarDetailPage() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {car.achievements.map((achievement, index) => (
-                    <div key={index} className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 p-4 rounded">
+                    <div key={index} className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 p-4 rounded shadow-sm">
                       <p className="text-gray-800 font-semibold">{achievement}</p>
                     </div>
                   ))}
@@ -870,12 +952,15 @@ export function CarDetailPage() {
           {/* Gallery */}
           {car.image_url && (
             <div className="p-8 bg-gray-50 border-t border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Galería</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <span>📸</span>
+                Galería
+              </h3>
               <div className="grid grid-cols-1 gap-4">
-                <div className="bg-white rounded-lg p-4 border-2 border-gray-200">
+                <div className="bg-white rounded-lg p-4 border-2 border-gray-200 shadow-sm">
                   <img
                     src={car.image_url}
-                    alt={`${car.model_name} - Vista principal`}
+                    alt={`${car.model_name || car.team_name} - Vista principal`}
                     className="w-full h-auto object-contain"
                     onError={(e) => {
                       e.target.parentElement.innerHTML = '<p class="text-gray-500 text-center py-8">Imagen no disponible</p>';

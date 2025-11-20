@@ -173,20 +173,56 @@ export const ChampionshipsPage = createListPage({
   title: "Campeonatos",
   icon: "🏆",
   endpoint: "championships",
-  idField: "championship_id",
+  idField: "year",
   onCardClick: (championship, navigate) => {
-    navigate(`/championships/${championship.championship_id}`);
+    navigate(`/championships/${championship.year || championship.championship_id || championship._id}`);
   },
   renderCard: (championship) => (
     <>
-      <h3 className="text-lg font-bold text-gray-800 mb-2">
-        {championship.name || `Campeonato ${championship.year}`}
-      </h3>
-      <p className="text-sm text-gray-600">📅 Año: {championship.year}</p>
-      {championship.seasons_count && (
-        <p className="text-xs text-gray-500 mt-2">
-          {championship.seasons_count} temporadas
-        </p>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-2xl font-bold text-gray-800">
+          {championship.year}
+        </h3>
+        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+          championship.status === 'completed' 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-blue-100 text-blue-800'
+        }`}>
+          {championship.status === 'completed' ? 'Completado' : 'En Progreso'}
+        </span>
+      </div>
+      
+      <p className="text-sm font-semibold text-gray-700 mb-3">
+        {championship.name || `Formula 1 World Championship ${championship.year}`}
+      </p>
+      
+      <div className="space-y-2 mb-4">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <span>🏁</span>
+          <span>{championship.completed_races || 0}/{championship.total_races || 0} Carreras</span>
+        </div>
+        
+        {championship.champion_driver && (
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span>👤</span>
+            <span className="font-semibold text-yellow-600">{championship.champion_driver}</span>
+          </div>
+        )}
+        
+        {championship.champion_constructor && (
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span>🏎️</span>
+            <span className="font-semibold text-yellow-600">{championship.champion_constructor}</span>
+          </div>
+        )}
+      </div>
+      
+      {championship.driver_standings && championship.driver_standings.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <p className="text-xs text-gray-500">
+            {championship.driver_standings.length} pilotos • {championship.constructor_standings?.length || 0} equipos
+          </p>
+        </div>
       )}
     </>
   ),
@@ -201,7 +237,13 @@ export const CarsPage = createListPage({
   onCardClick: (car, navigate) => {
     navigate(`/cars/${car.car_id}`);
   },
-  renderCard: (car) => (
+  renderCard: (car) => {
+    // Debug: verificar que el coche tenga datos
+    if (!car.team_name && !car.model_name) {
+      console.warn('Coche sin nombre:', car);
+    }
+    
+    return (
     <>
       {/* Imagen del coche */}
       <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden relative">
@@ -259,5 +301,6 @@ export const CarsPage = createListPage({
         </div>
       )}
     </>
-  ),
+  );
+  }
 });

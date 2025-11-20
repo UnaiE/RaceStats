@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import ImageGallery from "../components/ImageGallery";
 
 export default function DriverDetailPage() {
   const [driver, setDriver] = useState(null);
   const [stats, setStats] = useState(null);
+  const [enrichedData, setEnrichedData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -30,6 +32,16 @@ export default function DriverDetailPage() {
       }
       
       setDriver(foundDriver);
+      
+      // Los datos enriquecidos ya están en el objeto del piloto
+      if (foundDriver.news || foundDriver.images_gallery || foundDriver.career_highlights) {
+        setEnrichedData({
+          news: foundDriver.news || [],
+          images: foundDriver.images_gallery || [],
+          career_highlights: foundDriver.career_highlights || [],
+          stats: foundDriver.stats_scraped || {}
+        });
+      }
       
       // Obtener estadísticas completas
       try {
@@ -366,6 +378,63 @@ export default function DriverDetailPage() {
                 </div>
               )}
             </div>
+
+            {/* Driver News */}
+            {enrichedData && enrichedData.news && enrichedData.news.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span>📰</span>
+                  Noticias Recientes
+                </h3>
+                <div className="space-y-4">
+                  {enrichedData.news.map((item, index) => (
+                    <div key={index} className="border-l-4 border-blue-500 pl-4 py-2 hover:bg-gray-50 transition-colors bg-white rounded-r-lg">
+                      <a 
+                        href={item.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <h4 className="font-semibold text-gray-900 hover:text-blue-600">
+                          {item.title}
+                        </h4>
+                        {item.description && (
+                          <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                        )}
+                        <div className="flex gap-4 text-xs text-gray-400 mt-2">
+                          <span>{item.source}</span>
+                          <span>{new Date(item.date).toLocaleDateString('es-ES')}</span>
+                        </div>
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Career Highlights */}
+            {enrichedData && enrichedData.career_highlights && enrichedData.career_highlights.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <span>🏆</span>
+                  Logros de Carrera
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {enrichedData.career_highlights.slice(0, 6).map((highlight, index) => (
+                    <div key={index} className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 p-4 rounded">
+                      <p className="text-gray-800 text-sm">{highlight}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Image Gallery */}
+            {enrichedData && enrichedData.images && enrichedData.images.length > 0 && (
+              <div className="mt-8">
+                <ImageGallery images={enrichedData.images} title="Galería del Piloto" />
+              </div>
+            )}
           </div>
         </div>
       </main>

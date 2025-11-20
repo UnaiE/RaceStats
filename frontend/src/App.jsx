@@ -13,9 +13,9 @@ import { CircuitsPage, SeasonsPage, ChampionshipsPage, CarsPage } from "./pages/
 import { 
   CircuitDetailPage, 
   SeasonDetailPage, 
-  ChampionshipDetailPage, 
   CarDetailPage 
 } from "./pages/DetailPages";
+import { ChampionshipDetailPage } from "./pages/ChampionshipDetailPage";
 
 // Componente para proteger rutas
 function PrivateRoute({ children }) {
