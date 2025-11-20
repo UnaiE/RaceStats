@@ -11,7 +11,15 @@ export default function AuthPage() {
 
   const handleLoginSuccess = (userData) => {
     console.log("Login exitoso:", userData);
-    login(userData); // Guarda usuario en context y localStorage
+    
+    // Normalizar la estructura del usuario (user_id -> id)
+    const normalizedUser = {
+      id: userData.user_id || userData.id,
+      username: userData.username,
+      email: userData.email
+    };
+    
+    login(normalizedUser); // Guarda usuario en context y localStorage
     navigate("/dashboard"); // Redirige al dashboard
   };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import TeamNews from "../components/TeamNews";
 import ImageGallery from "../components/ImageGallery";
+import FavoriteButton from "../components/FavoriteButton";
 
 export default function TeamDetailPage() {
   const [team, setTeam] = useState(null);
@@ -141,9 +142,16 @@ export default function TeamDetailPage() {
                   }}
                 />
               )}
-              <h1 className="text-5xl font-bold mb-2 drop-shadow-lg">
-                {team.name || team.team_name}
-              </h1>
+              <div className="flex items-center justify-center gap-4 mb-2">
+                <h1 className="text-5xl font-bold drop-shadow-lg">
+                  {team.name || team.team_name}
+                </h1>
+                <FavoriteButton 
+                  entityType="team" 
+                  entityId={team.team_id} 
+                  entityName={team.name || team.team_name}
+                />
+              </div>
               <div className="flex items-center justify-center gap-3">
                 {team.country_code && (
                   <img

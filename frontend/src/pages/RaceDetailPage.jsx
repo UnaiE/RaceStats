@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import FavoriteButton from "../components/FavoriteButton";
 
 export default function RaceDetailPage() {
   const [race, setRace] = useState(null);
@@ -170,9 +171,16 @@ export default function RaceDetailPage() {
           {/* Hero Section */}
           <div className="relative h-48 bg-gradient-to-r from-red-600 to-red-800 flex items-center justify-center">
             <div className="text-center text-white z-10">
-              <h1 className="text-5xl font-bold mb-2">
-                {race.meeting_name || "Gran Premio"}
-              </h1>
+              <div className="flex items-center justify-center gap-4 mb-2">
+                <h1 className="text-5xl font-bold">
+                  {race.meeting_name || "Gran Premio"}
+                </h1>
+                <FavoriteButton 
+                  entityType="race" 
+                  entityId={race.session_key || race.race_id} 
+                  entityName={race.meeting_name || "Gran Premio"}
+                />
+              </div>
               <p className="text-2xl opacity-90">
                 📍 {race.location || race.circuit_short_name}
               </p>

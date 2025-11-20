@@ -58,6 +58,20 @@ export default function Dashboard() {
       color: "from-indigo-500 to-indigo-700",
       path: "/cars",
     },
+    {
+      title: "Mis Favoritos",
+      icon: "⭐",
+      description: "Tus pilotos y equipos favoritos",
+      color: "from-pink-500 to-pink-700",
+      path: "/favorites",
+    },
+    {
+      title: "Comparador",
+      icon: "📊",
+      description: "Compara pilotos y estadísticas",
+      color: "from-cyan-500 to-cyan-700",
+      path: "/comparisons",
+    },
   ];
 
   const handleLogout = () => {

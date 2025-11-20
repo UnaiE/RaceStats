@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ImageGallery from "../components/ImageGallery";
+import FavoriteButton from "../components/FavoriteButton";
 
 export default function DriverDetailPage() {
   const [driver, setDriver] = useState(null);
@@ -146,9 +147,16 @@ export default function DriverDetailPage() {
                     />
                   )}
                 </div>
-                <h1 className="text-4xl font-bold mb-2">
-                  {driver.full_name || "Sin nombre"}
-                </h1>
+                <div className="flex items-center gap-4">
+                  <h1 className="text-4xl font-bold mb-2">
+                    {driver.full_name || "Sin nombre"}
+                  </h1>
+                  <FavoriteButton 
+                    entityType="driver" 
+                    entityId={driver.driver_id} 
+                    entityName={driver.full_name}
+                  />
+                </div>
                 <p className="text-xl opacity-90">
                   {driver.team_name || "Sin equipo"}
                 </p>

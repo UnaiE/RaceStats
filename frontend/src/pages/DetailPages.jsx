@@ -1,6 +1,7 @@
 // Este archivo contiene todas las páginas de detalle adicionales
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import FavoriteButton from "../components/FavoriteButton";
 
 // ============================================
 // CIRCUIT DETAIL PAGE
@@ -107,9 +108,16 @@ export function CircuitDetailPage() {
           <div className="relative bg-gradient-to-r from-red-600 to-red-700 p-8 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-bold mb-2">
-                  {circuit.name || circuit.circuit_short_name}
-                </h1>
+                <div className="flex items-center gap-4 mb-2">
+                  <h1 className="text-4xl font-bold">
+                    {circuit.name || circuit.circuit_short_name}
+                  </h1>
+                  <FavoriteButton 
+                    entityType="circuit" 
+                    entityId={circuit.circuit_key || circuit.circuit_id} 
+                    entityName={circuit.name || circuit.circuit_short_name}
+                  />
+                </div>
                 <div className="flex items-center gap-3 text-lg">
                   {circuit.country_code && (
                     <img
@@ -738,9 +746,16 @@ export function CarDetailPage() {
               />
             )}
             <div className="absolute bottom-8 left-8 text-white">
-              <h1 className="text-5xl font-bold drop-shadow-lg">
-                {car.model_name || car.team_name}
-              </h1>
+              <div className="flex items-center gap-4">
+                <h1 className="text-5xl font-bold drop-shadow-lg">
+                  {car.model_name || car.team_name}
+                </h1>
+                <FavoriteButton 
+                  entityType="car" 
+                  entityId={car.car_id || car.car_number} 
+                  entityName={car.model_name || car.team_name}
+                />
+              </div>
               <p className="text-2xl opacity-90 mt-2">
                 {car.team_name}
               </p>

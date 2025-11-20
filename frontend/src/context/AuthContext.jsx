@@ -18,7 +18,16 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem("racestats_user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      // Normalizar user_id a id si es necesario
+      const normalizedUser = {
+        id: parsedUser.user_id || parsedUser.id,
+        username: parsedUser.username,
+        email: parsedUser.email
+      };
+      setUser(normalizedUser);
+      // Actualizar localStorage con la estructura normalizada
+      localStorage.setItem("racestats_user", JSON.stringify(normalizedUser));
     }
     setLoading(false);
   }, []);

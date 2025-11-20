@@ -16,6 +16,8 @@ import {
   CarDetailPage 
 } from "./pages/DetailPages";
 import { ChampionshipDetailPage } from "./pages/ChampionshipDetailPage";
+import FavoritesPage from "./pages/FavoritesPage";
+import ComparisonsPage from "./pages/ComparisonsPage";
 
 // Componente para proteger rutas
 function PrivateRoute({ children }) {
@@ -180,6 +182,22 @@ function App() {
             element={
               <PrivateRoute>
                 <CarDetailPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/favorites"
+            element={
+              <PrivateRoute>
+                <FavoritesPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/comparisons"
+            element={
+              <PrivateRoute>
+                <ComparisonsPage />
               </PrivateRoute>
             }
           />
