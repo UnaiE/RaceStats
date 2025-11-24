@@ -2,22 +2,420 @@
   "openapi": "3.0.0",
   "info": {
     "title": "RaceStats Backend Node API",
+    "description": "Node.js microservice for web scraping and data enrichment",
     "version": "1.0.0",
-    "description": "API de servicios Node.js para RaceStats"
+    "contact": {
+      "name": "RaceStats Team"
+    }
   },
   "servers": [
     {
       "url": "http://localhost:3001",
-      "description": "Servidor local"
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Service health checks"
+    },
+    {
+      "name": "Scraping",
+      "description": "Web scraping endpoints for F1 data enrichment"
     }
   ],
   "paths": {
     "/health": {
       "get": {
         "summary": "Health check",
+        "description": "Check if the Node.js service is running",
+        "tags": ["Health"],
         "responses": {
           "200": {
-            "description": "Servidor funcionando correctamente"
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scrape/news": {
+      "get": {
+        "summary": "Get F1 news",
+        "description": "Scrape latest F1 news articles from various sources",
+        "tags": ["Scraping"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of news items to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "F1 news articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "news": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "example": "Verstappen wins Brazilian GP"
+                          },
+                          "url": {
+                            "type": "string",
+                            "example": "https://example.com/news/verstappen-wins"
+                          },
+                          "date": {
+                            "type": "string",
+                            "example": "2024-11-03"
+                          },
+                          "image": {
+                            "type": "string",
+                            "example": "https://example.com/images/verstappen.jpg"
+                          }
+                        }
+                      }
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scrape/news/racefans": {
+      "get": {
+        "summary": "Get RaceFans news",
+        "description": "Scrape latest news articles from RaceFans",
+        "tags": ["Scraping"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of news items to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RaceFans news articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "news": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "image": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scrape/team/{teamName}": {
+      "get": {
+        "summary": "Scrape team data",
+        "description": "Get enriched team data from external sources (Wikipedia, etc.)",
+        "tags": ["Scraping"],
+        "parameters": [
+          {
+            "name": "teamName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Team name (e.g., 'Red Bull Racing')",
+            "example": "Red Bull Racing"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enriched team data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "fullName": {
+                      "type": "string"
+                    },
+                    "base": {
+                      "type": "string"
+                    },
+                    "teamChief": {
+                      "type": "string"
+                    },
+                    "technicalChief": {
+                      "type": "string"
+                    },
+                    "chassis": {
+                      "type": "string"
+                    },
+                    "powerUnit": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Team not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scrape/driver/{driverName}": {
+      "get": {
+        "summary": "Scrape driver data",
+        "description": "Get enriched driver data from external sources (Wikipedia, etc.)",
+        "tags": ["Scraping"],
+        "parameters": [
+          {
+            "name": "driverName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Driver name (e.g., 'Max Verstappen')",
+            "example": "Max Verstappen"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enriched driver data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "nationality": {
+                      "type": "string"
+                    },
+                    "dateOfBirth": {
+                      "type": "string"
+                    },
+                    "biography": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Driver not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scrape/car/{teamName}/{year}": {
+      "get": {
+        "summary": "Scrape car data",
+        "description": "Get enriched car technical data from external sources",
+        "tags": ["Scraping"],
+        "parameters": [
+          {
+            "name": "teamName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Team name (e.g., 'Red Bull Racing')",
+            "example": "Red Bull Racing"
+          },
+          {
+            "name": "year",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Year (e.g., 2023)",
+            "example": 2023
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enriched car technical data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "model": {
+                      "type": "string"
+                    },
+                    "team": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "integer"
+                    },
+                    "chassis": {
+                      "type": "string"
+                    },
+                    "engine": {
+                      "type": "string"
+                    },
+                    "weight": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Car not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "An error occurred"
           }
         }
       }

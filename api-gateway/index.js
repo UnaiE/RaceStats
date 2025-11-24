@@ -3,6 +3,11 @@ import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import { createProxyMiddleware } from "http-proxy-middleware";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -18,10 +23,12 @@ app.use(express.json());
 // Cargar documentación OpenAPI si existe
 let apiDocs;
 try {
-  apiDocs = YAML.load("./openapi.yaml");
+  const openapiPath = path.join(__dirname, "openapi.yaml");
+  apiDocs = YAML.load(openapiPath);
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(apiDocs));
+  console.log("✅ Swagger UI disponible en /api-docs");
 } catch (err) {
-  console.log("⚠️ No se encontró openapi.yaml, swagger-ui deshabilitado");
+  console.log("⚠️ No se encontró openapi.yaml, swagger-ui deshabilitado:", err.message);
 }
 
 // Health check
