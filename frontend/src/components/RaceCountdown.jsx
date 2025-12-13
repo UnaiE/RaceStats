@@ -18,6 +18,29 @@ export default function RaceCountdown() {
     const currentYear = now.getFullYear();
     
     try {
+      // HARDCODED: Primera carrera de la temporada 2026 (Australian GP - Melbourne)
+      // La temporada 2025 ha finalizado, configuración manual hasta que OpenF1 tenga datos de 2026
+      if (currentYear === 2025 || (currentYear === 2026 && now < new Date('2026-03-15'))) {
+        const firstRace2026 = {
+          meeting_name: "Australian Grand Prix",
+          location: "Melbourne",
+          country_name: "Australia",
+          circuit_short_name: "Albert Park",
+          session_name: "Race",
+          date_start: "2026-03-15T05:00:00Z", // Domingo 15 marzo 2026, 5:00 UTC
+          year: 2026,
+          meeting_key: null,
+          session_key: null
+        };
+        
+        setNextRace(firstRace2026);
+        setSeasonProgress(0); // Nueva temporada
+        setLastPodium([]); // Sin podio previo aún
+        setLoading(false);
+        console.log("🏁 Primera carrera de 2026 configurada manualmente:", firstRace2026.meeting_name);
+        return;
+      }
+      
       // Intentar obtener desde OpenF1 API directamente (más confiable)
       const openF1Url = `https://api.openf1.org/v1/meetings?year=${currentYear}`;
       
