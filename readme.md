@@ -2,6 +2,20 @@
 
 Aplicación web completa para explorar, comparar y analizar datos de Fórmula 1. RaceStats proporciona estadísticas detalladas sobre pilotos, equipos, carreras, circuitos y coches, con datos enriquecidos de múltiples fuentes incluyendo la API oficial de F1, Ergast y OpenF1.
 
+## 📑 Tabla de Contenidos
+
+- [Características Principales](#-características-principales)
+- [Stack Tecnológico](#️-stack-tecnológico)
+- [Inicio Rápido](#-inicio-rápido-con-docker)
+- [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Endpoints Principales](#-endpoints-principales)
+- [Desarrollo Local](#-desarrollo-local-opcional)
+- [Arquitectura](#-arquitectura)
+- [Solución de Problemas](#-solución-de-problemas)
+- [Estado del Proyecto](#-estado-del-proyecto)
+- [Contribuir](#-contribuir)
+- [Licencia](#-licencia)
+
 ## ✨ Características Principales
 
 ### 📊 Visualización de Datos
@@ -32,7 +46,20 @@ La aplicación incluye **resultados auténticos de la temporada 2025 de F1**:
 - Las 24 carreras con ganadores y podios reales
 - Datos históricos de las temporadas 2023-2025
 
-## 🛠️ Stack Tecnológico
+## � Capturas de Pantalla
+
+> 💡 **Nota**: Para ver la aplicación en acción, ejecuta `docker compose up -d` y visita http://localhost:5173
+
+### Características Destacadas
+
+- **Dashboard Principal**: Vista general con countdown de próxima carrera y noticias
+- **Perfiles de Pilotos**: Biografías completas con estadísticas, galerías y noticias
+- **Comparador**: Compara hasta 4 pilotos lado a lado con gráficos
+- **Favoritos**: Gestiona y accede rápidamente a tus pilotos/equipos favoritos
+- **Clasificaciones**: Visualiza clasificaciones en tiempo real de campeonatos
+- **Detalles de Carreras**: Resultados completos con podios y puntos
+
+## �🛠️ Stack Tecnológico
 
 ### Frontend
 - **React 18** con hooks modernos y context
@@ -138,9 +165,20 @@ RaceStats/
 
 ## 🚀 Inicio Rápido con Docker
 
-Requisitos: Docker Desktop (Windows/macOS) o Docker Engine (Linux).
+### Requisitos Previos
+
+- **Docker Desktop** (Windows/macOS) o **Docker Engine** (Linux)
+  - [Descargar Docker Desktop](https://www.docker.com/products/docker-desktop)
+- **Git** (para clonar el repositorio)
+- **Mínimo 4GB RAM** disponible para contenedores
+- **Puertos libres**: 5173, 8080, 8000, 3001, 27017, 5432
+
+### Instalación
 
 ```powershell
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/racestats.git
+cd racestats
 # Desde la raíz del proyecto
 docker compose up --build -d
 
@@ -201,12 +239,82 @@ Notas de Compose
 - Para evitar incompatibilidades de binarios, `node_modules` se gestionan dentro de los contenedores (volúmenes anónimos), no en el host.
 - El frontend ejecuta Vite con `--host 0.0.0.0` para exponer a `localhost`.
 
-Variables de entorno (definidas en `docker-compose.yml`)
-- **PostgreSQL**: `POSTGRES_USER=admin`, `POSTGRES_PASSWORD=admin`, `POSTGRES_DB=racestats`
-- **MongoDB**: `MONGO_URI=mongodb://mongo:27017/racestats`
-- **CORS Frontend**: `FRONTEND_URL=http://localhost:5173`
-- **Frontend (Vite)**: `VITE_API_URL=http://localhost:8080`
-- **WeatherAPI**: `WEATHER_API_KEY` (opcional, para predicciones meteorológicas)
+### Variables de Entorno
+
+Definidas en `docker-compose.yml` (ya configuradas por defecto):
+
+| Variable | Servicio | Valor por Defecto | Descripción |
+|----------|----------|-------------------|-------------|
+| `POSTGRES_USER` | PostgreSQL | `admin` | Usuario de PostgreSQL |
+| `POSTGRES_PASSWORD` | PostgreSQL | `admin` | Contraseña de PostgreSQL |
+| `POSTGRES_DB` | PostgreSQL | `racestats` | Base de datos PostgreSQL |
+| `MONGO_URI` | FastAPI | `mongodb://mongo:27017/racestats` | Conexión a MongoDB |
+| `FRONTEND_URL` | FastAPI | `http://localhost:5173` | URL del frontend para CORS |
+| `VITE_API_URL` | Frontend | `http://localhost:8080` | URL del API Gateway |
+| `WEATHER_API_KEY` | FastAPI | _(vacío)_ | API key de WeatherAPI (opcional) |
+
+> 💡 **Tip**: Para producción, crea un archivo `.env` y modifica estas variables con valores seguros.
+
+## 🏗️ Arquitectura
+
+RaceStats utiliza una arquitectura de microservicios con separación clara de responsabilidades:
+
+```
+┌─────────────┐
+│   Usuario   │
+└──────┬──────┘
+       │
+       ▼
+┌─────────────────────────┐
+│  Frontend (React/Vite)  │  Puerto 5173
+│  - SPA con React Router │
+│  - TailwindCSS v4       │
+│  - Gestión estado/auth  │
+└───────────┬─────────────┘
+            │
+            ▼
+┌─────────────────────────┐
+│   API Gateway (Nginx)   │  Puerto 8080
+│  - Proxy reverso        │
+│  - Enrutamiento         │
+└─────┬──────────┬────────┘
+      │          │
+      ▼          ▼
+┌──────────┐  ┌────────────┐
+│ FastAPI  │  │  Node.js   │
+│ (Python) │  │ (Express)  │
+│ Puerto   │  │ Puerto     │
+│  8000    │  │  3001      │
+└────┬─────┘  └─────┬──────┘
+     │              │
+     │              ▼
+     │        ┌──────────┐
+     │        │ Scraping │
+     │        │ Noticias │
+     │        └──────────┘
+     │
+     ├───────────────┬───────────────┐
+     ▼               ▼               ▼
+┌──────────┐   ┌──────────┐   ┌──────────┐
+│ MongoDB  │   │PostgreSQL│   │ APIs     │
+│ Datos F1 │   │ Usuarios │   │ Externas │
+│  27017   │   │   5432   │   │          │
+└──────────┘   └──────────┘   └──────────┘
+                                    │
+                     ┌──────────────┼──────────────┐
+                     ▼              ▼              ▼
+                 Ergast F1      OpenF1       Wikipedia
+                   API           API           API
+```
+
+### Flujo de Datos
+
+1. **Frontend** → Envía peticiones HTTP al API Gateway
+2. **API Gateway** → Enruta a FastAPI o Node.js según el endpoint
+3. **FastAPI** → Maneja datos F1 (MongoDB) y usuarios (PostgreSQL)
+4. **Node.js** → Realiza web scraping de noticias
+5. **Servicios externos** → Enriquecen datos con APIs de terceros
+6. **Respuesta** → Viaja de vuelta al frontend para renderizar
 
 ## 🔑 Endpoints Principales
 
@@ -406,7 +514,7 @@ docker exec -it racestats_postgres psql -U admin -d racestats -c "SELECT * FROM 
 ## 📈 Estado del Proyecto
 
 ✅ **Completado:**
-- Sistema de autenticación completo
+- Sistema de autenticación completo con bcrypt
 - CRUD de favoritos con enriquecimiento de datos
 - Comparador de pilotos con visualización interactiva
 - Integración de datos desde múltiples fuentes (Ergast, OpenF1, Wikipedia)
@@ -414,13 +522,26 @@ docker exec -it racestats_postgres psql -U admin -d racestats -c "SELECT * FROM 
 - Sistema de campeonatos con cálculo automático de puntuación
 - Páginas de detalle enriquecidas para todas las entidades
 - Botones de favoritos integrados en todas las páginas de detalle
+- Datos auténticos de la temporada 2025 de F1
+- Arquitectura de microservicios con Docker
+- Documentación completa del proyecto
 
-🚧 **En desarrollo:**
-- Scraping real de noticias (actualmente usa datos mock)
-- Sección "Mis Comparaciones Guardadas"
-- Comparador de equipos y coches
-- Notificaciones para favoritos
-- Función de compartir comparaciones
+
+
+
+
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+
+## 🙏 Agradecimientos
+
+- **Ergast API** - Por proporcionar datos históricos de F1
+- **OpenF1** - Por datos en tiempo real de carreras
+- **Wikipedia** - Por enriquecer biografías e imágenes
+- **Formula1.com** - Por ser fuente de noticias oficiales
+- **La comunidad de F1** - Por su pasión y apoyo
 
 ---
 
