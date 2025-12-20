@@ -223,7 +223,7 @@ export function ChampionshipDetailPage() {
                         </td>
                         <td className="px-4 py-4">
                           <span className="font-semibold text-gray-900">
-                            {driver.driver_name}
+                            {driver.driver || driver.driver_name || 'N/A'}
                           </span>
                         </td>
                         <td className="px-4 py-4 text-gray-600">
@@ -275,7 +275,7 @@ export function ChampionshipDetailPage() {
                         </td>
                         <td className="px-4 py-4">
                           <span className="font-semibold text-gray-900">
-                            {constructor.constructor_name}
+                            {constructor.team || constructor.constructor_name || 'N/A'}
                           </span>
                         </td>
                         <td className="px-4 py-4 text-center">

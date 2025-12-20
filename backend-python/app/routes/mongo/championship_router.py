@@ -9,9 +9,14 @@ from app.services.openf1_import_service import import_championships
 
 router = APIRouter(prefix="/championships", tags=["Championships"])
 
-@router.get("/", response_model=List[Championship])
+@router.get("/")
 def read_championships():
-    return get_all_championships()
+    """Obtener todos los campeonatos"""
+    data = get_all_championships()
+    print(f"[DEBUG] get_all_championships returned {len(data)} items")
+    for item in data:
+        print(f"  - year: {item.get('year')}, championship_id: {item.get('championship_id')}")
+    return data
 
 @router.get("/{championship_id}", response_model=Championship, summary="Obtener campeonato por ID")
 def read_championship(championship_id: str):

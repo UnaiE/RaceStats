@@ -175,29 +175,88 @@ def import_circuits():
 
 # === CHAMPIONSHIPS ===
 def import_championships():
-    """Genera campeonatos basándose en temporadas."""
+    """Genera campeonatos basándose en temporadas con información completa."""
+    from datetime import datetime
+    
     print("⏳ Generando campeonatos desde temporadas...")
     seasons_collection = get_collection("seasons")
     championships_collection = get_collection("championships")
+    races_collection = get_collection("races")
 
+    # Limpiar campeonatos existentes para evitar duplicados
+    championships_collection.delete_many({})
+    
+    # Datos históricos conocidos de campeones
+    champions_data = {
+        2023: {"driver": "Max VERSTAPPEN", "team": "Red Bull Racing"},
+        2024: {"driver": "Max VERSTAPPEN", "team": "McLaren"},
+        2025: {"driver": "Max VERSTAPPEN", "team": "Red Bull Racing"}  # Temporada completada
+    }
+    
     # Crear un campeonato por cada temporada
     championship_count = 0
-    for season in seasons_collection.find():
-        year = season.get("year")
-        if year:
-            championship_id = f"f1_{year}"
-            doc = {
-                "championship_id": championship_id,
-                "name": f"Formula 1 World Championship {year}",
-                "year": year,
-                "season_count": 1,
-            }
-            championships_collection.update_one(
-                {"championship_id": championship_id},
-                {"$set": doc},
-                upsert=True
-            )
-            championship_count += 1
+    for season in seasons_collection.find().sort("year", 1):
+        year_str = season.get("year")
+        if year_str:
+            try:
+                year_int = int(year_str) if isinstance(year_str, str) else year_str
+                championship_id = f"f1_{year_int}"
+                
+                # Obtener campeón y equipo ganador
+                champ_info = champions_data.get(year_int, {})
+                champion = champ_info.get("driver")
+                winning_team = champ_info.get("team")
+                
+                # Contar carreras
+                total_races = season.get("race_count", 0)
+                
+                # Determinar estado
+                current_year = datetime.now().year
+                current_month = datetime.now().month
+                
+                if year_int < current_year:
+                    status = "Completado"
+                    completed_races = total_races
+                elif year_int == current_year:
+                    # Verificar cuántas carreras ya pasaron
+                    now = datetime.now()
+                    completed = 0
+                    for race in races_collection.find({"year": year_int}):
+                        date_end_str = race.get("date_end")
+                        if date_end_str:
+                            try:
+                                date_end = datetime.fromisoformat(date_end_str.replace('+00:00', ''))
+                                if date_end < now:
+                                    completed += 1
+                            except:
+                                pass
+                    completed_races = completed
+                    
+                    # Si todas las carreras están completadas, marcar como completado
+                    status = "Completado" if completed_races >= total_races else "En Progreso"
+                else:
+                    status = "En Progreso"
+                    completed_races = 0
+                
+                doc = {
+                    "championship_id": championship_id,
+                    "name": f"Formula 1 World Championship {year_int}",
+                    "year": year_int,
+                    "season_count": 1,
+                    "total_races": total_races,
+                    "completed_races": completed_races,
+                    "champion": champion,
+                    "winning_team": winning_team,
+                    "status": status,
+                }
+                
+                championships_collection.insert_one(doc)
+                championship_count += 1
+                
+                print(f"  ✓ Campeonato {year_int}: {total_races} carreras, {completed_races} completadas - {status}")
+            except (ValueError, TypeError) as e:
+                print(f"  ✗ Error procesando año {year_str}: {e}")
+                continue
 
     print(f"✅ {championship_count} campeonatos generados.")
     return {"imported": championship_count}

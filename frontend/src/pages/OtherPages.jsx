@@ -184,11 +184,11 @@ export const ChampionshipsPage = createListPage({
           {championship.year}
         </h3>
         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-          championship.status === 'completed' 
+          championship.status === 'Completado' 
             ? 'bg-green-100 text-green-800' 
             : 'bg-blue-100 text-blue-800'
         }`}>
-          {championship.status === 'completed' ? 'Completado' : 'En Progreso'}
+          {championship.status || 'En Progreso'}
         </span>
       </div>
       
@@ -202,17 +202,17 @@ export const ChampionshipsPage = createListPage({
           <span>{championship.completed_races || 0}/{championship.total_races || 0} Carreras</span>
         </div>
         
-        {championship.champion_driver && (
+        {(championship.champion || championship.champion_driver) && (
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <span>👤</span>
-            <span className="font-semibold text-yellow-600">{championship.champion_driver}</span>
+            <span className="font-semibold text-yellow-600">{championship.champion || championship.champion_driver}</span>
           </div>
         )}
         
-        {championship.champion_constructor && (
+        {(championship.winning_team || championship.champion_constructor) && (
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <span>🏎️</span>
-            <span className="font-semibold text-yellow-600">{championship.champion_constructor}</span>
+            <span className="font-semibold text-yellow-600">{championship.winning_team || championship.champion_constructor}</span>
           </div>
         )}
       </div>

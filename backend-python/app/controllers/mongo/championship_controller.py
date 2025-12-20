@@ -4,7 +4,11 @@ from app.services.mongo_services import get_all, get_one_by_field, get_one, crea
 collection = "championships"
 
 def get_all_championships():
-    return get_all(collection)
+    data = get_all(collection)
+    print(f"[CONTROLLER] get_all_championships: {len(data)} items from DB")
+    for item in data:
+        print(f"  [CONTROLLER] - {item.get('year')} ({item.get('championship_id')})")
+    return data
 
 def get_championship(championship_id: str):
     # Intentar buscar por championship_id primero

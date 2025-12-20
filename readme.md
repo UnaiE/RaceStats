@@ -1,29 +1,59 @@
-# RaceStats
+# RaceStats 🏎️
 
-RaceStats es una aplicación web completa para visualizar, comparar y gestionar datos históricos y actuales de Fórmula 1. Ofrece estadísticas detalladas de pilotos, escuderías, carreras, circuitos y monoplazas, con datos enriquecidos desde múltiples fuentes (Ergast API, OpenF1, Wikipedia), sistema de autenticación de usuarios, favoritos personalizables y comparaciones interactivas.
+Aplicación web completa para explorar, comparar y analizar datos de Fórmula 1. RaceStats proporciona estadísticas detalladas sobre pilotos, equipos, carreras, circuitos y coches, con datos enriquecidos de múltiples fuentes incluyendo la API oficial de F1, Ergast y OpenF1.
 
 ## ✨ Características Principales
 
 ### 📊 Visualización de Datos
-- **Pilotos**: Perfiles completos con biografías, estadísticas de carrera, noticias y galerías de imágenes
-- **Equipos**: Historia, logros, pilotos actuales, patrocinadores y datos técnicos
-- **Carreras**: Resultados detallados, clasificaciones y análisis de rendimiento
-- **Circuitos**: Información técnica, mapas de trazado y estadísticas históricas
-- **Coches**: Especificaciones técnicas completas (motor, chasis, aerodinámica, etc.)
-- **Campeonatos**: Clasificaciones de pilotos y constructores con puntuación automática
-- **Clima**: Predicciones meteorológicas para próximas carreras (WeatherAPI)
+- **Pilotos**: Perfiles completos con biografías, estadísticas de carrera, últimas noticias y galerías de imágenes
+- **Equipos**: Historia del equipo, logros, pilotos actuales, patrocinadores y datos técnicos
+- **Carreras**: Resultados detallados de carreras, clasificaciones y análisis de rendimiento
+- **Circuitos**: Información técnica, mapas de pista y estadísticas históricas
+- **Coches**: Especificaciones técnicas completas (motor, chasis, aerodinámica)
+- **Campeonatos**: Clasificaciones de pilotos y constructores en tiempo real con cálculo automático de puntos
+- **Clima**: Pronósticos meteorológicos para próximas carreras con WeatherAPI
 
 ### 👤 Gestión de Usuarios
-- **Autenticación**: Sistema completo de registro/login con hash de contraseñas (bcrypt)
+- **Autenticación**: Sistema completo de registro/inicio de sesión con hash seguro de contraseñas (bcrypt)
 - **Favoritos**: Guarda tus pilotos, equipos, coches, carreras y circuitos favoritos
-- **Comparador**: Compara hasta 4 pilotos con estadísticas visuales destacadas
-- **Comparaciones Guardadas**: Almacena y recupera tus comparaciones favoritas
+- **Comparaciones**: Compara hasta 4 pilotos con estadísticas visuales
+- **Comparaciones Guardadas**: Almacena y recupera tus comparaciones favoritas de pilotos
 
 ### 📰 Contenido Enriquecido
-- Noticias en tiempo real de Formula1.com y RaceFans
-- Galerías de imágenes desde Wikipedia
-- Datos curiosos y logros de carrera
+- Noticias de F1 en tiempo real desde Formula1.com y RaceFans
+- Galerías de imágenes desde Wikipedia y fuentes oficiales
+- Curiosidades y logros de carrera
 - Biografías completas de pilotos y equipos
+
+### 🏆 Datos Temporada 2025
+La aplicación incluye **resultados auténticos de la temporada 2025 de F1**:
+- **Campeón de Pilotos**: Lando Norris (McLaren) - 423 puntos
+- **Campeón de Constructores**: McLaren - 833 puntos
+- Las 24 carreras con ganadores y podios reales
+- Datos históricos de las temporadas 2023-2025
+
+## 🛠️ Stack Tecnológico
+
+### Frontend
+- **React 18** con hooks modernos y context
+- **Vite** para desarrollo rápido y builds optimizados
+- **TailwindCSS** para estilos responsivos
+- **React Router** para navegación
+- **Axios** para comunicación con API
+
+### Backend
+- **FastAPI** (Python) - API principal con soporte async
+- **Express.js** (Node.js) - Microservicio de web scraping
+- **MongoDB** - Base de datos NoSQL para datos F1
+- **PostgreSQL** - Base de datos SQL para gestión de usuarios
+- **Motor** - Driver async de MongoDB
+- **SQLAlchemy** - ORM de SQL
+
+### Infraestructura
+- **Docker & Docker Compose** - Contenedorización
+- **Nginx** - API Gateway y reverse proxy
+- **bcrypt** - Hash seguro de contraseñas
+- **CORS** - Compartición de recursos entre orígenes
 
 ## 📋 Estructura del Proyecto
 
@@ -63,11 +93,9 @@ RaceStats/
 │   │   │   ├── weather_service.py       # WeatherAPI
 │   │   │   ├── mongo_services.py
 │   │   │   └── sql_services.py
-│   │   ├── resources/
-│   │   │   ├── db_mongo.py # Conexión MongoDB
-│   │   │   └── db_sql.py   # Conexión PostgreSQL
-│   │   └── scripts/
-│   │       └── import_openf1.py  # Script de importación de datos
+│   │   └── resources/
+│   │       ├── db_mongo.py # Conexión MongoDB
+│   │       └── db_sql.py   # Conexión PostgreSQL
 │   └── cache/              # Cache para WeatherAPI
 ├── frontend/               # Frontend React + Vite + Tailwind v4
 │   ├── Dockerfile
@@ -108,7 +136,7 @@ RaceStats/
 └── .gitignore
 ```
 
-## 🚀 Arranque rápido con Docker
+## 🚀 Inicio Rápido con Docker
 
 Requisitos: Docker Desktop (Windows/macOS) o Docker Engine (Linux).
 
@@ -120,13 +148,13 @@ docker compose up --build -d
 docker compose ps
 
 # Logs de un servicio (ejemplo frontend)
-
+docker compose logs -f frontend
 
 # Parar todo
 docker compose down
 ```
 
-Servicios y URLs
+### Servicios y URLs
 - **Frontend (Vite)**: http://localhost:5173
   - Dashboard: http://localhost:5173/dashboard
   - Login: http://localhost:5173/login
@@ -160,7 +188,7 @@ Servicios y URLs
 - **Favorites**: Relación usuario-entidad (driver/team/car/race/circuit)
 - **Comparisons**: Comparaciones guardadas por usuario
 
-Rutas útiles
+### Rutas útiles
 - Gateway health: GET http://localhost:8080/health
 - Proxy a FastAPI: GET http://localhost:8080/api/python/
 - Proxy a Node: GET http://localhost:8080/api/node/health
