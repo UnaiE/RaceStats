@@ -2,19 +2,41 @@
 
 Aplicación web completa para explorar, comparar y analizar datos de Fórmula 1. RaceStats proporciona estadísticas detalladas sobre pilotos, equipos, carreras, circuitos y coches, con datos enriquecidos de múltiples fuentes incluyendo la API oficial de F1, Ergast y OpenF1.
 
+---
+
+## ⚡ Inicio Rápido (TL;DR)
+
+```powershell
+# 1. Instala Docker Desktop: https://www.docker.com/products/docker-desktop
+# 2. Clona y arranca:
+git clone https://github.com/tu-usuario/racestats.git
+cd racestats
+docker compose up --build -d
+
+# 3. Espera 30-60 segundos y abre tu navegador:
+# 🌐 http://localhost:5173
+```
+
+**¡Eso es todo!** La aplicación estará corriendo con todos los servicios listos.
+
+---
+
 ## 📑 Tabla de Contenidos
 
+- [⚡ Inicio Rápido (TL;DR)](#-inicio-rápido-tldr)
+- [🚀 Guía de Instalación y Ejecución](#-guía-de-instalación-y-ejecución)
+  - [0️⃣ Software Necesario](#0️⃣-software-necesario)
+  - [1️⃣ Clonar el Repositorio](#1️⃣-clonar-el-repositorio)
+  - [2️⃣ Servicios que se Arrancarán](#2️⃣-servicios-que-se-arrancarán)
+  - [3️⃣ Dependencias (Automáticas)](#3️⃣-dependencias-automáticas)
+  - [4️⃣ Arrancar el Servidor](#4️⃣-arrancar-el-servidor-stack-completo)
+  - [5️⃣ Acceder a la Aplicación](#5️⃣-acceder-a-la-aplicación-cliente)
 - [Características Principales](#-características-principales)
 - [Stack Tecnológico](#️-stack-tecnológico)
-- [Inicio Rápido](#-inicio-rápido-con-docker)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Arquitectura](#️-arquitectura)
 - [Endpoints Principales](#-endpoints-principales)
-- [Desarrollo Local](#-desarrollo-local-opcional)
-- [Arquitectura](#-arquitectura)
-- [Solución de Problemas](#-solución-de-problemas)
-- [Estado del Proyecto](#-estado-del-proyecto)
-- [Contribuir](#-contribuir)
-- [Licencia](#-licencia)
+
 
 ## ✨ Características Principales
 
@@ -163,41 +185,126 @@ RaceStats/
 └── .gitignore
 ```
 
-## 🚀 Inicio Rápido con Docker
+## 🚀 Guía de Instalación y Ejecución
 
-### Requisitos Previos
+### 0️⃣ Software Necesario
 
-- **Docker Desktop** (Windows/macOS) o **Docker Engine** (Linux)
-  - [Descargar Docker Desktop](https://www.docker.com/products/docker-desktop)
-- **Git** (para clonar el repositorio)
-- **Mínimo 4GB RAM** disponible para contenedores
+Antes de comenzar, asegúrate de tener instalado:
+
+| Software | Versión Mínima | Descarga |
+|----------|----------------|----------|
+| **Docker Desktop** | 20.10+ | [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop) |
+| **Git** | 2.0+ | [git-scm.com/downloads](https://git-scm.com/downloads) |
+
+**Requisitos del Sistema:**
+- **RAM**: Mínimo 4GB disponible para contenedores
+- **Espacio en disco**: 5GB libres
 - **Puertos libres**: 5173, 8080, 8000, 3001, 27017, 5432
 
-### Instalación
+> 💡 **Nota**: No necesitas instalar Node.js, Python, MongoDB ni PostgreSQL. Docker se encarga de todo.
+
+### 1️⃣ Clonar el Repositorio
 
 ```powershell
-# Clonar el repositorio
+# Clonar el proyecto
 git clone https://github.com/tu-usuario/racestats.git
 cd racestats
-# Desde la raíz del proyecto
-docker compose up --build -d
-
-# Ver estado
-docker compose ps
-
-# Logs de un servicio (ejemplo frontend)
-docker compose logs -f frontend
-
-# Parar todo
-docker compose down
 ```
 
-### Servicios y URLs
-- **Frontend (Vite)**: http://localhost:5173
+### 2️⃣ Servicios que se Arrancarán
+
+El proyecto levanta automáticamente **6 servicios** en contenedores Docker:
+
+| Servicio | Descripción | Puerto |
+|----------|-------------|--------|
+| **frontend** | Aplicación React + Vite | 5173 |
+| **api-gateway** | Gateway Nginx (proxy) | 8080 |
+| **backend_fastapi** | API Python FastAPI | 8000 |
+| **backend_node** | API Node.js Express | 3001 |
+| **mongo** | Base de datos MongoDB | 27017 |
+| **postgres** | Base de datos PostgreSQL | 5432 |
+
+### 3️⃣ Dependencias (Automáticas)
+
+**No necesitas instalar dependencias manualmente.** Docker se encarga de todo:
+
+- **Frontend**: `npm install` se ejecuta automáticamente en el contenedor
+- **Backend Python**: `pip install -r requirements.txt` se ejecuta automáticamente
+- **Backend Node**: `npm install` se ejecuta automáticamente en ambos backends
+
+### 4️⃣ Arrancar el Servidor (Stack Completo)
+
+```powershell
+# Desde la raíz del proyecto (RaceStats/)
+docker compose up --build -d
+```
+
+**¿Qué hace este comando?**
+- `up`: Levanta todos los servicios
+- `--build`: Construye las imágenes Docker (primera vez o si hay cambios)
+- `-d`: Modo detached (ejecuta en segundo plano)
+
+**Verificar que todo funciona:**
+
+```powershell
+# Ver estado de los contenedores
+docker compose ps
+
+# Ver logs en tiempo real
+docker compose logs -f
+
+# Ver logs de un servicio específico
+docker compose logs -f frontend
+docker compose logs -f backend_fastapi
+```
+
+**Espera a que todos los servicios estén "healthy" o "running" (30-60 segundos).**
+
+### 5️⃣ Acceder a la Aplicación Cliente
+
+Una vez que los servicios estén corriendo, abre tu navegador:
+
+#### 🌐 **Acceso Principal**
+
+**Frontend (Interfaz de Usuario)**
+- **URL**: http://localhost:5173
+- **Páginas disponibles**:
   - Dashboard: http://localhost:5173/dashboard
-  - Login: http://localhost:5173/login
+  - Login/Registro: http://localhost:5173/login
+  - Pilotos: http://localhost:5173/drivers
+  - Equipos: http://localhost:5173/teams
+  - Carreras: http://localhost:5173/races
   - Favoritos: http://localhost:5173/favorites
   - Comparador: http://localhost:5173/comparisons
+
+#### 🔧 **Acceso a APIs (para desarrollo)**
+
+- **API Gateway**: http://localhost:8080
+- **FastAPI Docs**: http://localhost:8000/docs (Swagger interactivo)
+- **FastAPI OpenAPI**: http://localhost:8000/openapi.json
+- **Backend Node Health**: http://localhost:3001/health
+
+#### 📊 **Acceso a Bases de Datos (opcional)**
+
+```powershell
+# MongoDB (desde terminal)
+docker exec -it racestats_mongo mongosh racestats
+
+# PostgreSQL (desde terminal)
+docker exec -it racestats_postgres psql -U admin -d racestats
+```
+
+### 🛑 Detener los Servicios
+
+```powershell
+# Detener todos los contenedores (conserva datos)
+docker compose down
+
+# Detener y eliminar volúmenes (BORRA DATOS)
+docker compose down -v
+
+# Reiniciar un servicio específico
+docker compose restart frontend
 - **API Gateway**: http://localhost:8080
 - **FastAPI**: http://localhost:8000
   - Docs interactivos: http://localhost:8000/docs
@@ -370,181 +477,4 @@ GET /seasons/{year}              # Obtener temporada específica
 GET /weather/forecast/{location}  # Predicción meteorológica
 GET /api/scrape/news              # Noticias de F1 (Node.js)
 ```
-
-## 💻 Desarrollo local (opcional)
-
-### Backend Python (FastAPI)
-
-Usa el entorno virtual del proyecto y el `requirements.txt` ya preparado.
-
-```powershell
-# Crear y activar venv (Windows PowerShell)
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-
-# Instalar dependencias del backend
-pip install -r backend-python/requirements.txt
-
-# Ejecutar FastAPI en local
-cd backend-python
-python -m uvicorn app.main:app --reload
-```
-
-El `requirements.txt` incluye, entre otros: fastapi, uvicorn, sqlalchemy, motor, pymongo,
-pydantic, pydantic-settings, email-validator, httpx, requests, passlib[bcrypt], bcrypt 3.2.2,
-dnspython, psycopg2-binary.
-
-### Frontend
-
-```powershell
-cd frontend
-npm install
-npm run dev
-```
-
-Tailwind CSS v4 está configurado con `@tailwindcss/postcss` y `src/index.css`:
-
-```css
-@import "tailwindcss";
-```
-
-## 🛠️ Tecnologías
-
-### Frontend
-- **React 18.3.1** - Biblioteca UI con hooks y context
-- **Vite 6** - Build tool ultra rápido
-- **Tailwind CSS v4** - Framework CSS utility-first
-- **React Router v6** - Navegación SPA con rutas protegidas
-
-### Backend
-- **FastAPI** - Framework Python asíncrono para APIs REST
-- **Express.js** - Framework Node.js para scraping y gateway
-- **SQLAlchemy** - ORM para PostgreSQL
-- **Motor** / **PyMongo** - Cliente asíncrono para MongoDB
-- **Pydantic v2** - Validación de datos y schemas
-- **Passlib + Bcrypt** - Hash seguro de contraseñas
-
-### Bases de Datos
-- **MongoDB 7** - Base de datos NoSQL para datos de F1
-- **PostgreSQL 16** - Base de datos relacional para usuarios
-
-### APIs Externas
-- **Ergast F1 API** - Datos históricos de F1
-- **OpenF1** - Datos en tiempo real de F1
-- **Wikipedia API** - Enriquecimiento de biografías e imágenes
-- **WeatherAPI** - Predicciones meteorológicas (opcional)
-
-### Infraestructura
-- **Docker** - Containerización
-- **Docker Compose** - Orquestación de 6 servicios
-
-## 📦 Qué commitear
-
-Se recomienda subir al repositorio:
-- `docker-compose.yml` y todos los `Dockerfile`
-- `.gitignore` y los `.dockerignore`
-- Código fuente, `requirements.txt`, `package.json` y `package-lock.json`
-
-No subir:
-- `node_modules/`, `.venv/`, `dist/`, `build/`, caches (`__pycache__`, `.pytest_cache`, `.vite`, `.eslintcache`), bases de datos locales (`racestats.db`) ni ficheros `.env` (usa un `.env.example`).
-
-## 🧩 Solución de problemas
-
-### Problemas comunes
-
-**El frontend no carga o muestra errores de autenticación:**
-- Asegúrate de que el usuario esté correctamente guardado en localStorage
-- Cierra sesión y vuelve a iniciar sesión para normalizar la estructura del usuario
-- Verifica que el backend de FastAPI esté ejecutándose en el puerto 8000
-
-**Los favoritos no se cargan o muestran "Cargando...":**
-- Abre la consola del navegador (F12) y busca errores
-- Verifica que el usuario tenga `id` (no `user_id`) en el objeto de autenticación
-- Comprueba que las entidades favoritas existan en MongoDB
-
-**Las comparaciones no guardan:**
-- Verifica que el usuario esté autenticado
-- Revisa la consola para errores de la API
-- Asegúrate de que PostgreSQL esté ejecutándose
-
-**Error "No se pudieron cargar las estadísticas":**
-- Algunos pilotos pueden no tener datos completos de Ergast
-- Es normal para pilotos nuevos o de reserva
-
-**El scraping de noticias falla:**
-- El servicio usa noticias mock mientras el scraping real está en desarrollo
-- No afecta la funcionalidad principal de la aplicación
-
-### Comandos útiles de Docker
-
-```powershell
-# Ver logs de un servicio específico
-docker logs racestats_frontend
-docker logs racestats_backend_fastapi
-
-# Reiniciar un servicio
-docker restart racestats_frontend
-
-# Acceder a la shell de un contenedor
-docker exec -it racestats_backend_fastapi bash
-docker exec -it racestats_postgres psql -U admin -d racestats
-
-# Ver estadísticas de recursos
-docker stats
-
-# Limpiar contenedores y volúmenes
-docker compose down -v
-```
-
-### Base de datos
-
-```powershell
-# Conectar a MongoDB
-docker exec -it racestats_mongo mongosh racestats
-
-# Conectar a PostgreSQL
-docker exec -it racestats_postgres psql -U admin -d racestats
-
-# Ver favoritos de un usuario
-docker exec -it racestats_postgres psql -U admin -d racestats -c "SELECT * FROM favorites WHERE user_id = 1;"
-```
-
----
-
-## 📈 Estado del Proyecto
-
-✅ **Completado:**
-- Sistema de autenticación completo con bcrypt
-- CRUD de favoritos con enriquecimiento de datos
-- Comparador de pilotos con visualización interactiva
-- Integración de datos desde múltiples fuentes (Ergast, OpenF1, Wikipedia)
-- Especificaciones técnicas completas para todos los coches
-- Sistema de campeonatos con cálculo automático de puntuación
-- Páginas de detalle enriquecidas para todas las entidades
-- Botones de favoritos integrados en todas las páginas de detalle
-- Datos auténticos de la temporada 2025 de F1
-- Arquitectura de microservicios con Docker
-- Documentación completa del proyecto
-
-
-
-
-
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
-
-## 🙏 Agradecimientos
-
-- **Ergast API** - Por proporcionar datos históricos de F1
-- **OpenF1** - Por datos en tiempo real de carreras
-- **Wikipedia** - Por enriquecer biografías e imágenes
-- **Formula1.com** - Por ser fuente de noticias oficiales
-- **La comunidad de F1** - Por su pasión y apoyo
-
----
-
-¡Listo! Con `docker compose up --build -d` deberías tener el stack completo funcionando. Inicia sesión en http://localhost:5173/login para comenzar a explorar.
-
 
