@@ -19,12 +19,6 @@ def get_weather_forecast(location: str, race_date: str = None, days: int = 3):
     Returns:
         JSON con forecast del fin de semana del GP (Viernes, Sábado, Domingo)
     """
-    if not weather_service.api_key:
-        raise HTTPException(
-            status_code=503,
-            detail="Weather API key not configured"
-        )
-    
     if days < 1 or days > 3:
         raise HTTPException(
             status_code=400,

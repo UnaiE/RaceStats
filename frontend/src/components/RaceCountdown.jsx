@@ -36,6 +36,10 @@ export default function RaceCountdown() {
         setNextRace(firstRace2026);
         setSeasonProgress(0); // Nueva temporada
         setLastPodium([]); // Sin podio previo aún
+        
+        // Obtener pronóstico del tiempo para Melbourne
+        await fetchWeather(firstRace2026);
+        
         setLoading(false);
         console.log("🏁 Primera carrera de 2026 configurada manualmente:", firstRace2026.meeting_name);
         return;
